@@ -405,25 +405,7 @@ header{background:var(--ink);color:var(--paper);padding:0 1.75rem;height:56px;di
           </div>
         </div>
 
-        <div class="listings-grid" id="listings-grid">
-          <div class="listing-card" onclick="openListingProfile()">
-            <div class="listing-thumb">🏠</div>
-            <div class="listing-info">
-              <div class="listing-address">456 Elm Street, Anaheim CA 92801</div>
-              <div class="listing-meta">4 bd · 2.5 ba · 2,100 sqft · 6,500 sqft lot</div>
-              <div class="listing-tags">
-                <span class="tag live">Live</span>
-                <span class="tag mls">On MLS</span>
-                <span class="tag" style="background:var(--gold-light);color:var(--gold)">⚠ Price review</span>
-              </div>
-            </div>
-            <div class="listing-right">
-              <div class="listing-price">$875,000</div>
-              <div class="listing-dom">26 days on market</div>
-              <div class="listing-views">4 showings</div>
-            </div>
-          </div>
-        </div>
+        <div class="listings-grid" id="listings-grid"></div>
       </div>
 
       <!-- LISTING PROFILE PANEL -->
@@ -955,7 +937,7 @@ function showError(el, msg) {
   el.classList.add('show');
 }
 
-function enterDashboard() {
+async function enterDashboard() {
   const { first, last, email } = currentUser;
   const displayName = [first, last].filter(Boolean).join(' ') || email;
   const initials = ((first[0] || '') + (last[0] || '')).toUpperCase() || email[0].toUpperCase();
@@ -975,11 +957,14 @@ function enterDashboard() {
     <button class="hdr-btn" onclick="signOut()">Sign out</button>
   `;
   toast(`Welcome back, ${first || email}.`);
+  await loadListings();
 }
 
 async function signOut() {
   await sb.auth.signOut();
   currentUser = null;
+  document.getElementById('listings-grid').innerHTML = '';
+  document.getElementById('stat-active').textContent = '0';
   document.getElementById('dashboard').classList.remove('active');
   document.getElementById('auth-screen').style.display = 'flex';
   document.getElementById('hdr-right').innerHTML = `
@@ -1109,6 +1094,76 @@ async function submitListing() {
 
   closeListingForm();
   toast(`Listing draft saved for ${address}.`);
+  await loadListings();
+}
+
+// ── LISTINGS DATA ─────────────────────────────────────────────────────
+async function loadListings() {
+  const grid = document.getElementById('listings-grid');
+  grid.innerHTML = '<div style="padding:1.5rem;color:var(--muted);font-size:.875rem">Loading…</div>';
+
+  const { data: listings, error } = await sb
+    .from('listings')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    grid.innerHTML = '<div style="padding:1.5rem;color:var(--red);font-size:.875rem">Could not load listings.</div>';
+    return;
+  }
+
+  const activeCount = listings.filter(l => l.status === 'live').length;
+  document.getElementById('stat-active').textContent = activeCount;
+
+  if (listings.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🏡</div>
+        <h3>No listings yet</h3>
+        <p>Click <strong>New listing</strong> to add your first property.</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = listings.map(renderListingCard).join('');
+}
+
+function renderListingCard(listing) {
+  const statusMap = {
+    live:    '<span class="tag live">Live</span>',
+    draft:   '<span class="tag draft">Draft</span>',
+    pending: '<span class="tag pending">Pending</span>',
+    sold:    '<span class="tag sold">Sold</span>'
+  };
+  const statusTag = statusMap[listing.status] || statusMap.draft;
+  const mlsTag    = listing.status === 'live' ? '<span class="tag mls">On MLS</span>' : '';
+
+  const meta = [
+    listing.bedrooms  ? `${listing.bedrooms} bd`                     : null,
+    listing.bathrooms ? `${listing.bathrooms} ba`                    : null,
+    listing.sqft      ? `${listing.sqft.toLocaleString()} sqft`      : null,
+    listing.lot_size  ? `${listing.lot_size.toLocaleString()} sqft lot` : null
+  ].filter(Boolean).join(' · ');
+
+  const price   = listing.price ? `$${Number(listing.price).toLocaleString()}` : '—';
+  const domDays = Math.floor((Date.now() - new Date(listing.created_at)) / 86400000);
+  const domText = domDays === 0 ? 'Listed today' : `${domDays} day${domDays === 1 ? '' : 's'} on market`;
+  const addr    = [listing.address, listing.city, listing.state].filter(Boolean).join(', ');
+
+  return `
+    <div class="listing-card">
+      <div class="listing-thumb">🏠</div>
+      <div class="listing-info">
+        <div class="listing-address">${addr}</div>
+        <div class="listing-meta">${meta || '—'}</div>
+        <div class="listing-tags">${statusTag}${mlsTag}</div>
+      </div>
+      <div class="listing-right">
+        <div class="listing-price">${price}</div>
+        <div class="listing-dom">${domText}</div>
+      </div>
+    </div>`;
 }
 
 // ── LISTING PROFILE ───────────────────────────────────────────────────
