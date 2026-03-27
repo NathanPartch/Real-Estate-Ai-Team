@@ -1,0 +1,88 @@
+{
+  "property_id": "test",
+  "address": "123 Oak Avenue, Orange CA 92868",
+  "generated_at": "2026-03-27T13:52:11.849708",
+  "source": "Google Places API \u2014 live data",
+  "professionals": {
+    "photographer": {
+      "category_info": {
+        "why_needed": "Professional photos are the single most impactful thing you can do for your listing. Homes with pro photos sell faster and attract more serious buyers.",
+        "when_to_recommend": "Always \u2014 unless seller already has professional photos",
+        "typical_cost": "$150\u2013$400 depending on home size",
+        "urgency": "Book 5\u20137 days before listing goes live"
+      },
+      "results": [
+        {
+          "name": "3D Media",
+          "address": "19782 MacArthur Blvd Ste 220, Irvine, CA 92612, USA",
+          "rating": 5,
+          "review_count": 152,
+          "place_id": "ChIJX4o-RjXc3IARRe9INYAVjPo",
+          "phone": "(949) 478-4336",
+          "hours": "Monday: 8:00\u202fAM\u2009\u2013\u20098:00\u202fPM; Tuesday: 8:00\u202fAM\u2009\u2013\u20098:00\u202fPM; Wednesday: 8:00\u202fAM\u2009\u2013\u20098:00\u202fPM...",
+          "website": "https://www.3dmedia.com/"
+        },
+        {
+          "name": "Corcino Productions",
+          "address": "1601 Sinclair St Unit C, Anaheim, CA 92806, USA",
+          "rating": 5,
+          "review_count": 117,
+          "place_id": "ChIJFZ-QlhMPSGQRbmza_rMs7b0",
+          "phone": "(909) 896-5358",
+          "hours": "Daily: 6:00\u202fAM\u2009\u2013\u200911:00\u202fPM",
+          "website": "https://www.corcinoproductions.com/"
+        },
+        {
+          "name": "Elyse Leedom Photography",
+          "address": "Resident Service Office, 100 St Vincent, Irvine, CA 92618, USA",
+          "rating": 5,
+          "review_count": 76,
+          "place_id": "ChIJ1SjvXHrb3IARQ6V8LK7uUlQ",
+          "phone": "(949) 690-5685",
+          "hours": "Daily: 9:00\u202fAM\u2009\u2013\u20096:00\u202fPM",
+          "website": "https://www.elyseleedomphotography.com/?utm_source=gmb&utm_medium=organic"
+        }
+      ]
+    },
+    "inspector": {
+      "category_info": {
+        "why_needed": "A pre-listing inspection shows you exactly what a buyer's inspector will find \u2014 before they find it. Fixes issues proactively, prevents escrow surprises.",
+        "when_to_recommend": "Always for homes 15+ years old, or when condition flags exist",
+        "typical_cost": "$300\u2013$450 for a standard single-family home",
+        "urgency": "Schedule before listing goes live"
+      },
+      "results": [
+        {
+          "name": "Elite Group Inspection Professionals",
+          "address": "21700 Copley Dr #390, Diamond Bar, CA 91765, USA",
+          "rating": 4.8,
+          "review_count": 2282,
+          "place_id": "ChIJs5Zdln0rw4ARrFuNsewhGQ4",
+          "phone": "(909) 918-4323",
+          "hours": "Monday: 5:00\u202fAM\u2009\u2013\u20097:00\u202fPM; Tuesday: 5:00\u202fAM\u2009\u2013\u20097:00\u202fPM; Wednesday: 5:00\u202fAM\u2009\u2013\u20097:00\u202fPM...",
+          "website": "https://eliteinspections.com/?utm_source=google&utm_medium=organic&utm_campaign=google_my_business"
+        },
+        {
+          "name": "Elite Group Inspection Professionals",
+          "address": "9480 Utica Ave #608, Rancho Cucamonga, CA 91730, USA",
+          "rating": 5,
+          "review_count": 1485,
+          "place_id": "ChIJDRbPXyc1w4ARWIFc6rxui5E",
+          "phone": "(909) 918-4393",
+          "hours": "Monday: 8:00\u202fAM\u2009\u2013\u20097:00\u202fPM; Tuesday: 8:00\u202fAM\u2009\u2013\u20097:00\u202fPM; Wednesday: 8:00\u202fAM\u2009\u2013\u20097:00\u202fPM...",
+          "website": "https://eliteinspections.com/rancho-cucamonga-home-inspections/?utm_source=google&utm_medium=organic&utm_campaign=google_my_business"
+        },
+        {
+          "name": "Coastal Inspection Services",
+          "address": "28241 Crown Valley Pkwy f432, Laguna Niguel, CA 92677, USA",
+          "rating": 5,
+          "review_count": 859,
+          "place_id": "ChIJ4bxC4_zu3IARxMbdfD31jDw",
+          "phone": "(949) 481-2501",
+          "hours": "Daily: 8:00\u202fAM\u2009\u2013\u20098:00\u202fPM",
+          "website": "http://www.coastalinspection.us/"
+        }
+      ]
+    }
+  }
+}

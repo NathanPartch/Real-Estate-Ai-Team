@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PropAgent</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1814;--paper:#f7f4ef;--warm:#f0ebe2;
+  --accent:#c8602a;--accent-light:#f5e8df;
+  --muted:#8c8880;--border:#ddd8d0;
+  --green:#2a6b4a;--green-light:#e8f2ec;
+  --gold:#b8860b;--radius:12px;
+  --shadow:0 2px 16px rgba(26,24,20,.08);
+  --shadow-lg:0 8px 40px rgba(26,24,20,.14);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+header{background:var(--ink);color:var(--paper);padding:0 1.75rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
+.logo{font-family:'DM Serif Display',serif;font-size:1.35rem;letter-spacing:-.02em}
+.logo em{color:var(--accent);font-style:italic}
+.hdr-right{display:flex;align-items:center;gap:1rem}
+.role-pill{font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid rgba(247,244,239,.25);color:var(--paper)}
+.back-btn{font-size:.8rem;color:rgba(247,244,239,.55);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;transition:color .15s}
+.back-btn:hover{color:var(--paper)}
+
+/* ROLE SCREEN */
+#role-screen{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;animation:fadeUp .4s ease}
+.role-wrap{max-width:520px;width:100%;text-align:center}
+.role-wrap h1{font-family:'DM Serif Display',serif;font-size:clamp(2rem,5vw,2.75rem);line-height:1.1;margin-bottom:.6rem}
+.role-wrap h1 em{color:var(--accent);font-style:italic}
+.role-wrap .sub{color:var(--muted);font-size:1rem;margin-bottom:2.5rem;font-weight:300}
+.role-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+@media(max-width:480px){.role-cards{grid-template-columns:1fr}}
+.role-card{background:white;border:1.5px solid var(--border);border-radius:16px;padding:2.25rem 1.75rem;cursor:pointer;transition:all .2s;text-align:left;position:relative;overflow:hidden}
+.role-card::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s;pointer-events:none}
+.role-card.seller::after{background:radial-gradient(circle at top left,var(--accent-light),transparent 70%)}
+.role-card.buyer::after{background:radial-gradient(circle at top left,var(--green-light),transparent 70%)}
+.role-card:hover{border-color:transparent;box-shadow:var(--shadow-lg);transform:translateY(-3px)}
+.role-card:hover::after{opacity:1}
+.role-icon{font-size:2.25rem;display:block;margin-bottom:1.1rem;position:relative;z-index:1}
+.role-card h3{font-family:'DM Serif Display',serif;font-size:1.45rem;margin-bottom:.4rem;position:relative;z-index:1}
+.role-card p{font-size:.875rem;color:var(--muted);line-height:1.6;font-weight:300;position:relative;z-index:1}
+.role-tag{display:inline-block;margin-top:1.1rem;font-size:.7rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:20px;position:relative;z-index:1}
+.seller .role-tag{background:var(--accent-light);color:var(--accent)}
+.buyer .role-tag{background:var(--green-light);color:var(--green)}
+
+/* APP */
+#app-screen{display:none;flex:1;overflow:hidden}
+#app-screen.active{display:flex}
+.app-layout{flex:1;display:grid;grid-template-columns:1fr 320px;height:calc(100vh - 56px);overflow:hidden}
+@media(max-width:820px){.app-layout{grid-template-columns:1fr}.right-col{display:none}}
+
+/* LEFT COLUMN */
+.left-col{display:flex;flex-direction:column;overflow:hidden}
+
+/* TABS */
+.chat-tabs{display:flex;border-bottom:1px solid var(--border);background:white;flex-shrink:0}
+.tab{flex:1;padding:.85rem 1rem;font-size:.8rem;font-weight:500;text-align:center;cursor:pointer;color:var(--muted);border-bottom:2.5px solid transparent;transition:all .15s;user-select:none}
+.tab.active{color:var(--ink);border-bottom-color:var(--accent)}
+.tab-badge{display:inline-flex;align-items:center;justify-content:center;width:7px;height:7px;border-radius:50%;margin-left:6px;vertical-align:middle;transition:background .3s}
+.tab-badge.live{background:#22c55e;animation:pulse 2s infinite}
+.tab-badge.busy{background:var(--gold);animation:pulse 1s infinite}
+.tab-badge.off{background:var(--border)}
+
+/* PANES */
+.chat-pane{display:none;flex:1;flex-direction:column;overflow:hidden;background:var(--paper)}
+.chat-pane.active{display:flex}
+
+.msgs{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1rem}
+
+/* MESSAGES */
+.msg{display:flex;gap:.75rem;max-width:88%;animation:slideUp .22s ease}
+.msg.user{flex-direction:row-reverse;align-self:flex-end}
+.av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:500;letter-spacing:.03em}
+.av.la{background:var(--ink);color:var(--paper)}
+.av.ba{background:var(--green);color:white}
+.av.user{background:var(--accent);color:white}
+.av.orch{background:#3d2c1e;color:var(--paper)}
+.av.ma{background:#1a3558;color:white}
+.av.dd{background:#3d2a00;color:white}
+.av.rw{background:#2a1a3a;color:white}
+
+.bubble{padding:.8rem 1.05rem;border-radius:14px;font-size:.875rem;line-height:1.65;min-width:0}
+.msg.agent .bubble{background:white;border:1px solid var(--border);border-bottom-left-radius:4px}
+.msg.user .bubble{background:var(--ink);color:var(--paper);border-bottom-right-radius:4px}
+.bubble p+p{margin-top:.4rem}
+
+/* BTS messages */
+.msg.sys .bubble{background:var(--warm);border:1px solid var(--border);border-bottom-left-radius:4px;font-size:.83rem;color:#4a4640}
+.msg.sys.s-la .bubble{border-left:3px solid var(--ink)}
+.msg.sys.s-orch .bubble{border-left:3px solid #3d2c1e}
+.msg.sys.s-ma .bubble{border-left:3px solid #1a3558}
+.msg.sys.s-dd .bubble{border-left:3px solid #3d2a00}
+.msg.sys.s-rw .bubble{border-left:3px solid #2a1a3a}
+.sys-tag{font-size:.65rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+
+/* question group */
+.q-group{background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;margin-top:.5rem}
+.q-lbl{font-size:.67rem;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:.45rem}
+.q-group ol{padding-left:1.15rem}
+.q-group li{font-size:.855rem;margin-bottom:.3rem;line-height:1.55}
+
+/* appt suggestion */
+.appt-card{background:var(--green-light);border:1px solid #b7d9c5;border-radius:10px;padding:.85rem 1rem;margin-top:.5rem}
+.appt-card-lbl{font-size:.67rem;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--green);margin-bottom:.35rem}
+.appt-card-body{font-size:.855rem;line-height:1.55}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.75rem}
+.chip{padding:5px 13px;border-radius:20px;font-size:.8rem;border:1.5px solid var(--border);background:white;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.chip:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.chip:disabled{opacity:.45;cursor:default}
+
+/* status notice */
+.s-notice{display:flex;align-items:center;gap:.6rem;padding:.55rem 1rem;margin:.1rem 0;background:var(--warm);border-radius:8px;font-size:.77rem;color:var(--muted);border:1px solid var(--border)}
+.s-notice .nd{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.nd.busy{background:var(--gold);animation:pulse 1s infinite}
+.nd.done{background:var(--green)}
+
+/* typing indicator */
+.typing-row{display:flex;gap:.75rem;max-width:88%;animation:slideUp .22s ease}
+.typing-dots{background:white;border:1px solid var(--border);border-radius:14px;border-bottom-left-radius:4px;padding:.8rem 1.1rem;display:flex;gap:5px;align-items:center}
+.typing-dots span{width:7px;height:7px;border-radius:50%;background:var(--border);display:inline-block}
+.typing-dots span:nth-child(1){animation:bounce .9s infinite}
+.typing-dots span:nth-child(2){animation:bounce .9s .15s infinite}
+.typing-dots span:nth-child(3){animation:bounce .9s .3s infinite}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+
+/* BTS empty */
+.bts-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7rem;color:var(--muted);padding:2rem;text-align:center}
+.bts-icon{font-size:1.75rem;opacity:.35}
+.bts-empty p{font-size:.84rem;line-height:1.6;max-width:250px}
+.bts-note{font-size:.75rem;color:var(--muted);padding:.75rem 1.5rem;text-align:center;border-top:1px solid var(--border);background:white;flex-shrink:0}
+
+/* INPUT */
+.input-area{padding:.9rem 1.25rem;border-top:1px solid var(--border);background:white;flex-shrink:0}
+.input-row{display:flex;gap:.65rem;align-items:flex-end;background:var(--warm);border:1.5px solid var(--border);border-radius:var(--radius);padding:.6rem .7rem;transition:border-color .2s}
+.input-row:focus-within{border-color:var(--ink)}
+#chat-in{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:.875rem;resize:none;outline:none;max-height:110px;min-height:22px;line-height:1.55;color:var(--ink)}
+#chat-in::placeholder{color:var(--muted)}
+.send-btn{width:34px;height:34px;border-radius:8px;background:var(--ink);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+.send-btn:hover{background:var(--accent)}
+.send-btn svg{width:15px;height:15px;fill:white}
+.input-hint{font-size:.68rem;color:var(--muted);margin-top:.4rem;text-align:center}
+
+/* RIGHT COLUMN */
+.right-col{background:white;border-left:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.rc-sec{padding:1.1rem 1.1rem .8rem;border-bottom:1px solid var(--border)}
+.rc-lbl{font-size:.67rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem}
+
+/* pipeline */
+.p-step{display:flex;align-items:flex-start;gap:.7rem;padding:.45rem 0;position:relative}
+.p-step:not(:last-child)::after{content:'';position:absolute;left:9px;top:22px;bottom:-4px;width:1px;background:var(--border)}
+.p-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:600;flex-shrink:0;margin-top:1px}
+.p-dot.done{background:var(--green);color:white}
+.p-dot.now{background:var(--accent);color:white;animation:pulse 2s infinite}
+.p-dot.todo{background:var(--warm);border:1.5px solid var(--border);color:var(--muted)}
+.p-name{font-size:.81rem;font-weight:400}
+.p-sub{font-size:.71rem;color:var(--muted);margin-top:1px}
+
+/* appointments */
+.a-row{display:flex;gap:.65rem;padding:.6rem 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.a-row:last-child{border:none}
+.a-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.a-dot.pending{background:var(--gold)}
+.a-dot.scheduled{background:#22c55e}
+.a-type{font-size:.81rem;font-weight:500}
+.a-when{font-size:.72rem;color:var(--muted);margin-top:1px}
+
+/* toast */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ink);color:var(--paper);padding:.8rem 1.15rem;border-radius:var(--radius);font-size:.83rem;box-shadow:var(--shadow-lg);z-index:999;display:flex;align-items:center;gap:.65rem;animation:slideUp .3s ease}
+.toast .td{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Prop<em>Agent</em></div>
+  <div class="hdr-right">
+    <span class="role-pill" id="role-pill" style="display:none"></span>
+    <button class="back-btn" id="back-btn" style="display:none" onclick="goBack()">← Change role</button>
+  </div>
+</header>
+
+<!-- ROLE SCREEN -->
+<div id="role-screen">
+  <div class="role-wrap">
+    <h1>Your real estate team,<br><em>always on.</em></h1>
+    <p class="sub">Tell us who you are and we'll connect you straight to the right agent.</p>
+    <div class="role-cards">
+      <div class="role-card seller" onclick="start('seller')">
+        <span class="role-icon">🏠</span>
+        <h3>I'm Selling</h3>
+        <p>Get your property listed, priced accurately, and connected to qualified buyers.</p>
+        <span class="role-tag">Listing Agent</span>
+      </div>
+      <div class="role-card buyer" onclick="start('buyer')">
+        <span class="role-icon">🔑</span>
+        <h3>I'm Buying</h3>
+        <p>Find the right property, understand the market, and make a confident offer.</p>
+        <span class="role-tag">Buyer Agent</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP SCREEN -->
+<div id="app-screen">
+  <div class="app-layout">
+
+    <!-- LEFT: CHAT + AGENT ACTIVITY TABS -->
+    <div class="left-col">
+      <div class="chat-tabs">
+        <div class="tab active" id="tab-you" onclick="switchTab('you')">
+          Your Agent <span class="tab-badge live" id="badge-you"></span>
+        </div>
+        <div class="tab" id="tab-bts" onclick="switchTab('bts')">
+          Agent Activity <span class="tab-badge off" id="badge-bts"></span>
+        </div>
+      </div>
+
+      <!-- YOUR CHAT -->
+      <div class="chat-pane active" id="pane-you">
+        <div class="msgs" id="user-msgs"></div>
+        <div class="input-area">
+          <div class="input-row">
+            <textarea id="chat-in" placeholder="Message your agent…" rows="1"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"
+              oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px'"></textarea>
+            <button class="send-btn" onclick="send()">
+              <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+            </button>
+          </div>
+          <div class="input-hint">Enter to send · Shift+Enter for new line</div>
+        </div>
+      </div>
+
+      <!-- AGENT ACTIVITY (read-only) -->
+      <div class="chat-pane" id="pane-bts">
+        <div class="msgs" id="bts-msgs">
+          <div class="bts-empty" id="bts-empty">
+            <div class="bts-icon">⚙️</div>
+            <p>Your agent is coordinating with the team behind the scenes. Their activity will appear here.</p>
+          </div>
+        </div>
+        <div class="bts-note">Read-only — your agent handles all coordination. You only talk to your agent.</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: PIPELINE + APPOINTMENTS -->
+    <div class="right-col">
+      <div class="rc-sec">
+        <div class="rc-lbl">Transaction Pipeline</div>
+        <div id="pipeline"></div>
+      </div>
+      <div class="rc-sec">
+        <div class="rc-lbl">Appointments</div>
+        <div id="appts"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let role=null, pipeline=[], appts=[];
+
+const cfg={
+  seller:{
+    pill:'Seller',avCls:'la',avLbl:'LA',
+    agentName:'Your Listing Agent',
+    pipeline:[
+      {n:'Seller intake',       s:'now',  sub:'Collecting property info'},
+      {n:'Market analysis',     s:'todo', sub:'Comps & pricing'},
+      {n:'Due diligence',       s:'todo', sub:'Risk & compliance review'},
+      {n:'Listing published',   s:'todo', sub:'AI-optimized listing live'},
+      {n:'Buyer matching',      s:'todo', sub:'Qualified buyers identified'},
+      {n:'Showings',            s:'todo', sub:'In-person tours'},
+      {n:'Offer & escrow',      s:'todo', sub:'Under contract'},
+      {n:'Close',               s:'todo', sub:'Keys handed over'},
+    ],
+    appts:[
+      {t:'Listing Photography',   w:'TBD — to be scheduled',   s:'pending'},
+      {t:'Pre-listing Inspection',w:'Recommended',              s:'pending'},
+      {t:'Home Inspection',       w:'After offer accepted',     s:'pending'},
+      {t:'Termite Inspection',    w:'After offer accepted',     s:'pending'},
+      {t:'Appraisal',             w:'Lender-ordered',           s:'pending'},
+      {t:'Final Walkthrough',     w:'1–3 days before close',    s:'pending'},
+      {t:'Signing Appointment',   w:'Close of escrow',          s:'pending'},
+    ]
+  },
+  buyer:{
+    pill:'Buyer',avCls:'ba',avLbl:'BA',
+    agentName:'Your Buyer Agent',
+    pipeline:[
+      {n:'Buyer profile',        s:'now',  sub:'Search criteria set up'},
+      {n:'Property matching',    s:'todo', sub:'Listings matched to criteria'},
+      {n:'Market analysis',      s:'todo', sub:'Comps & fair price check'},
+      {n:'Due diligence',        s:'todo', sub:'Risk flags reviewed'},
+      {n:'Deal analysis',        s:'todo', sub:'Offer strategy built'},
+      {n:'Offer submitted',      s:'todo', sub:'Under contract'},
+      {n:'Inspections',          s:'todo', sub:'Home, termite, roof, sewer'},
+      {n:'Appraisal',            s:'todo', sub:'Lender-ordered'},
+      {n:'Final walkthrough',    s:'todo', sub:'1–3 days before close'},
+      {n:'Close',                s:'todo', sub:'Keys received'},
+    ],
+    appts:[
+      {t:'Loan Officer Consult', w:'Recommended this week',     s:'pending'},
+      {t:'Property Showing',     w:'TBD — properties matched',  s:'pending'},
+      {t:'Home Inspection',      w:'After offer accepted',       s:'pending'},
+      {t:'Termite Inspection',   w:'After offer accepted',       s:'pending'},
+      {t:'Sewer Scope',          w:'After offer accepted',       s:'pending'},
+      {t:'Appraisal',            w:'Lender-ordered',             s:'pending'},
+      {t:'Final Walkthrough',    w:'1–3 days before close',      s:'pending'},
+      {t:'Signing Appointment',  w:'Close of escrow',            s:'pending'},
+    ]
+  }
+};
+
+// ── SCRIPTED CONVERSATION ─────────────────────────────────────────────
+const sellerScript=[{
+  text:`Welcome — I'm your listing agent. I'll handle everything: market analysis, risk review, your listing, and connecting you with qualified buyers. You only ever talk to me.
+
+Let's start with your property.`,
+  q:{lbl:'Tell me about your property',items:[
+    'What is the full address?',
+    'Is it currently owner-occupied, tenant-occupied, or vacant?',
+    'What are you thinking for asking price? Or would you like the team to recommend one?',
+    'Do you have a target close date?'
+  ]},
+  chips:['456 Elm St, Anaheim CA — use the example','I\'ll type my own address']
+}];
+
+const buyerScript=[{
+  text:`Welcome — I'm your buyer agent. I'll find properties that match what you're looking for, run the market numbers, flag any risks, and help you build a strong offer. You only ever talk to me.
+
+Let's figure out what you need.`,
+  q:{lbl:'What are you looking for?',items:[
+    'What type of property? (house, condo, townhouse, multi-unit)',
+    'Which cities or zip codes? Or give me an area.',
+    'Minimum beds and baths?',
+    'Your budget range?',
+    'Must-haves or deal breakers?'
+  ]},
+  chips:['Single-family home','Condo or townhouse','Multi-unit','Any type works']
+}];
+
+// Responses keyed to chip values
+const sellerResp={
+  "456 Elm St, Anaheim CA — use the example":{
+    userMsg:'456 Elm Street, Anaheim CA 92801. Owner-occupied, asking $875,000, flexible on close.',
+    text:`Got it. A few condition questions before I send the team:`,
+    q:{lbl:'About the property condition',items:[
+      'The roof is original from 1988 — 38 years old. Any recent inspections or known issues?',
+      'What type and age is the water heater?',
+      'Any unpermitted additions or open permits?',
+      'Any insurance claims in the last 5 years?'
+    ]},
+    chips:['No known issues','Roof was recently inspected','I have some things to flag']
+  },
+  'No known issues':{
+    text:`Noted — no known issues. I'm dispatching the team now. You'll see their activity in the Agent Activity tab.`,
+    dispatchBTS:true
+  },
+  'Roof was recently inspected':{
+    text:`Good. Do you have the report? It'll strengthen your disclosure position.`,
+    chips:['Yes — I can share it','No report available'],
+    dispatchBTS:true
+  },
+  'No report available':{
+    text:`No problem. I'll flag the roof age in due diligence and recommend a pre-listing inspection. Dispatching the team now.`,
+    newAppt:{t:'Pre-listing Inspection',w:'To be scheduled — recommended',s:'pending'},
+    dispatchBTS:true
+  },
+  'Yes — I can share it':{
+    text:`Perfect — I'll pull it into the due diligence review. Dispatching the team now.`,
+    dispatchBTS:true
+  },
+  'I have some things to flag':{
+    text:`Good that you're telling me now — that's what I'm here for. What should I note?`,
+    chips:['Unpermitted addition','HOA issues','Roof concerns','I\'ll type it out']
+  }
+};
+
+const buyerResp={
+  'Single-family home':{
+    text:`Single-family — great. A few more details:`,
+    q:{lbl:'Narrowing your search',items:[
+      'Which cities or zip codes?',
+      'Minimum beds and baths?',
+      'Budget range?',
+      'Pre-approved, or still working on financing?'
+    ]},
+    chips:['Anaheim / OC area','I\'ll type my criteria']
+  },
+  'Anaheim / OC area':{
+    text:`Good market. Let me pull matched inventory and get the team running. Last thing:`,
+    q:{lbl:'Your financing',items:[
+      'Pre-approved? If yes, for how much?',
+      'Down payment: 10%, 20%, or more?',
+      'Primary residence or investment?',
+      'Any deal breakers? (no HOA, must have garage, no flood zone, etc.)'
+    ]},
+    chips:['Pre-approved — ready to move','Still working on financing']
+  },
+  'Pre-approved — ready to move':{
+    text:`Pre-approved buyers get priority. Building your profile and matching properties now. The team will run comps and flag risks before you see anything.`,
+    dispatchBTS:true
+  },
+  'Still working on financing':{
+    text:`No problem. I'll schedule a loan officer consult as a first step — that'll clarify your real buying power. I'm also starting property matching in the background.`,
+    newAppt:{t:'Loan Officer Consult',w:'To be scheduled this week',s:'pending'},
+    dispatchBTS:true
+  }
+};
+
+// ── BTS SCRIPTS ───────────────────────────────────────────────────────
+function btsSellerScript(){
+  const el=document.getElementById('bts-msgs');
+  clearBTSEmpty();
+  setBTSBadge('busy');
+
+  const steps=[
+    {d:600, fn:()=>addBTS(el,'s-la','la','LA','Listing Agent → Orchestrator',
+      'Intake complete: 456 Elm St, Anaheim 92801. Owner-occupied, asking $875K. Roof age 38yr flagged. Dispatching pipeline: market-analyst, due-diligence, deal-advisor.')},
+    {d:1800,fn:()=>addBTS(el,'s-orch','orch','OR','Orchestrator',
+      'Received. Assigning:\n• TASK-001 → market-analyst: comps, $/sqft, DOM for 92801 SFR\n• TASK-002 → due-diligence: risk review, HOA, flood zone, roof age\n• TASK-003 → deal-advisor: cap rate, offer strategy (pending TASK-001 + 002)')},
+    {d:3200,fn:()=>addNotice(el,'Market analyst working…','busy')},
+    {d:5000,fn:()=>addBTS(el,'s-ma','ma','MA','Market Analyst → Listing Agent',
+      'Comps complete — 4 SFR sales in 92801 (1,800–2,400 sqft, last 6 months). Median $/sqft: $408. Suggested range: $847K–$890K. Subject at $875K is within range. Confidence: medium. Avg DOM: 31 days. Est. gross rental yield: 5.2%.')},
+    {d:6800,fn:()=>addNotice(el,'Due diligence working…','busy')},
+    {d:8500,fn:()=>addBTS(el,'s-dd','dd','DD','Due Diligence → Listing Agent',
+      'Risk review complete.\n✅ Flood zone: X — not required\n✅ Fire zone: Standard\n✅ Zoning: R1 single-family\n⚠️ HOA reserve fund status: UNKNOWN — need docs from Elm Park HOA\n⚠️ Roof: 38yr original — estimated remaining life under 5 years. Recommend pre-listing inspection.\n⚠️ Electrical panel brand: unknown — need seller to confirm\n✅ Unpermitted work: none per seller\nOverall risk: MEDIUM. 2 flags, 1 unknown.')},
+    {d:10000,fn:()=>addBTS(el,'s-la','la','LA','Listing Agent → Orchestrator',
+      'Received market + DD outputs. Preparing seller verification for roof flag and HOA reserve fund. Will push questions to seller chat now. Listing hold until seller responds.')},
+    {d:11200,fn:()=>addBTS(el,'s-orch','orch','OR','Orchestrator',
+      'Market-analyst: DONE ✅\nDue-diligence: DONE ✅\nDeal-advisor: QUEUED (waiting on listing-agent seller verification)\nReport-writer: STANDING BY')},
+    {d:12500,fn:()=>{
+      // Push follow-up questions back into user chat
+      addMsg('user-msgs','agent','la','LA',
+        'The team flagged two items that buyers will definitely ask about. I need your help before I can publish:',
+        {q:{lbl:'Please confirm',items:[
+          'Roof is 38 years old — original to the build. Has it been re-roofed, repaired, or inspected recently? Do you have any documentation?',
+          'The HOA reserve fund status is unknown. Can you request the reserve study from Elm Park HOA, or do you know if they\'re adequately funded?'
+        ]},chips:['Roof has been maintained — no major issues','I\'ll get the HOA docs','Neither — let\'s proceed as-is and disclose']});
+      advancePipeline(['Market analysis','Due diligence']);
+      setBTSBadge('done');
+    }},
+  ];
+
+  steps.forEach(s=>setTimeout(s.fn,s.d));
+  // Also quietly schedule photography
+  setTimeout(()=>{
+    appts.unshift({t:'Listing Photography',w:'TBD — scheduling in progress',s:'pending'});
+    renderAppts();
+    toast('Listing photography added to appointments');
+  },4500);
+}
+
+function btsBuyerScript(){
+  const el=document.getElementById('bts-msgs');
+  clearBTSEmpty();
+  setBTSBadge('busy');
+
+  const steps=[
+    {d:600,fn:()=>addBTS(el,'s-la','ba','BA','Buyer Agent → Orchestrator',
+      'Buyer profile set: SFR, Anaheim/OC, pre-approved, primary residence. Dispatching: market-analyst for active inventory + comps, due-diligence for buyer risk checklist, deal-advisor for offer strategy.')},
+    {d:1800,fn:()=>addBTS(el,'s-orch','orch','OR','Orchestrator',
+      'Received buyer profile. Tasks assigned:\n• TASK-001 → market-analyst: active SFR inventory 92801, price ranges, DOM\n• TASK-002 → due-diligence: buyer risk checklist\n• TASK-003 → deal-advisor: offer strategy for pre-approved buyer')},
+    {d:3500,fn:()=>addNotice(el,'Market analyst scanning inventory…','busy')},
+    {d:5200,fn:()=>addBTS(el,'s-ma','ma','MA','Market Analyst → Buyer Agent',
+      'Inventory scan complete. 14 active SFR listings in 92801. Median ask: $862K. Avg DOM: 31 days — balanced market. 6 properties match buyer budget. Flagging top 3 matches for buyer review. Comps ready.')},
+    {d:7000,fn:()=>addBTS(el,'s-dd','dd','DD','Due Diligence → Buyer Agent',
+      'Buyer risk checklist prepared. On any offer, verify:\n• Flood zone (FEMA)\n• HOA financials + reserve fund\n• Permit history for any additions\n• Roof + HVAC age\n• Electrical panel brand (Federal Pacific/Zinsco = flag)\nReady to run full report when buyer selects target property.')},
+    {d:8500,fn:()=>addBTS(el,'s-la','ba','BA','Buyer Agent → Buyer',
+      '3 matched properties identified. Running comps on each. Preparing showing schedule.')},
+    {d:9500,fn:()=>{
+      addMsg('user-msgs','agent','ba','BA',
+        'Good news — 3 properties matched your criteria in the Anaheim/OC area. The team has run initial comps on each. Want me to walk you through them, or schedule showings first?',
+        {chips:['Walk me through the properties','Schedule showings','Both — start with the overview']});
+      advancePipeline(['Property matching','Market analysis']);
+      appts.unshift({t:'Property Showing',w:'TBD — 3 properties ready',s:'pending'});
+      renderAppts();
+      setBTSBadge('done');
+      toast('3 properties matched — showings ready to schedule');
+    }}
+  ];
+  steps.forEach(s=>setTimeout(s.fn,s.d));
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────
+function renderPipeline(){
+  document.getElementById('pipeline').innerHTML=pipeline.map(p=>`
+    <div class="p-step">
+      <div class="p-dot ${p.s}">${p.s==='done'?'✓':p.s==='now'?'●':'○'}</div>
+      <div><div class="p-name">${p.n}</div><div class="p-sub">${p.sub}</div></div>
+    </div>`).join('');
+}
+function renderAppts(){
+  document.getElementById('appts').innerHTML=appts.map(a=>`
+    <div class="a-row">
+      <div class="a-dot ${a.s}"></div>
+      <div><div class="a-type">${a.t}</div><div class="a-when">${a.w}</div></div>
+    </div>`).join('');
+}
+function advancePipeline(names){
+  pipeline=pipeline.map(p=>names.includes(p.n)?{...p,s:'done'}:p);
+  // find first remaining todo and set to now if no active
+  if(!pipeline.find(p=>p.s==='now')){
+    const idx=pipeline.findIndex(p=>p.s==='todo');
+    if(idx>-1)pipeline[idx].s='now';
+  }
+  renderPipeline();
+}
+
+function addMsg(containerId,msgRole,avCls,avLbl,text,extras={}){
+  const c=document.getElementById(containerId);
+  const isUser=msgRole==='user';
+  const div=document.createElement('div');
+  div.className=`msg ${msgRole}`;
+  let html=`<div class="av ${avCls}">${isUser?'Me':avLbl}</div><div style="min-width:0"><div class="bubble">`;
+  text.split('\n').forEach(l=>{html+=`<p>${l}</p>`;});
+  if(extras.q){
+    html+=`<div class="q-group"><div class="q-lbl">${extras.q.lbl}</div><ol>`;
+    extras.q.items.forEach(i=>{html+=`<li>${i}</li>`;});
+    html+=`</ol></div>`;
+  }
+  if(extras.appt){
+    html+=`<div class="appt-card"><div class="appt-card-lbl">📅 Appointment suggested</div><div class="appt-card-body"><strong>${extras.appt.t}</strong> — ${extras.appt.w}</div></div>`;
+  }
+  html+=`</div>`;
+  if(extras.chips){
+    html+=`<div class="chips">`;
+    extras.chips.forEach(ch=>{html+=`<button class="chip" onclick="chip(this,'${ch.replace(/'/g,"\\'")}')">${ch}</button>`;});
+    html+=`</div>`;
+  }
+  html+=`</div>`;
+  div.innerHTML=html;
+  c.appendChild(div);
+  c.scrollTop=c.scrollHeight;
+}
+
+function addTyping(){
+  const c=document.getElementById('user-msgs');
+  const av=cfg[role].avCls, lbl=cfg[role].avLbl;
+  const d=document.createElement('div');
+  d.className='typing-row';d.id='typing';
+  d.innerHTML=`<div class="av ${av}">${lbl}</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function rmTyping(){const t=document.getElementById('typing');if(t)t.remove();}
+
+function addBTS(el,cls,avCls,avLbl,name,text){
+  const d=document.createElement('div');
+  d.className=`msg sys ${cls}`;
+  let html=`<div class="av ${avCls}">${avLbl}</div><div style="min-width:0"><div class="bubble"><div class="sys-tag">${name}</div>`;
+  text.split('\n').forEach(l=>{html+=`<p>${l}</p>`;});
+  html+=`</div></div>`;
+  d.innerHTML=html;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+function addNotice(el,text,type){
+  const d=document.createElement('div');
+  d.className='s-notice';
+  d.innerHTML=`<div class="nd ${type}"></div>${text}`;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+function clearBTSEmpty(){const e=document.getElementById('bts-empty');if(e)e.remove();}
+function setBTSBadge(state){
+  const b=document.getElementById('badge-bts');
+  b.className='tab-badge '+state;
+  if(state==='done')b.style.animation='none';
+}
+
+function toast(msg){
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  const t=document.createElement('div');
+  t.className='toast';t.innerHTML=`<div class="td"></div>${msg}`;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),3500);
+}
+
+// ── INTERACTIONS ──────────────────────────────────────────────────────
+function chip(btn,val){
+  btn.closest('.chips').querySelectorAll('.chip').forEach(c=>c.disabled=true);
+  const respMap=role==='seller'?sellerResp:buyerResp;
+  const r=respMap[val];
+
+  // Show what the user "said"
+  const displayText=r?.userMsg||val;
+  addMsg('user-msgs','user','user','Me',displayText);
+
+  if(!r){
+    setTimeout(()=>{
+      addTyping();
+      setTimeout(()=>{rmTyping();addMsg('user-msgs','agent',cfg[role].avCls,cfg[role].avLbl,
+        'Got it — I\'ve noted that. Anything else to add, or shall I continue?',
+        {chips:['Continue','I have more to add']});},900);
+    },200);
+    return;
+  }
+
+  setTimeout(()=>{
+    addTyping();
+    setTimeout(()=>{
+      rmTyping();
+      addMsg('user-msgs','agent',cfg[role].avCls,cfg[role].avLbl,r.text,
+        {q:r.q,chips:r.chips,appt:r.appt});
+      if(r.newAppt){
+        appts.unshift(r.newAppt);renderAppts();
+        toast(`${r.newAppt.t} added to appointments`);
+      }
+      if(r.dispatchBTS){
+        advancePipeline([role==='seller'?'Seller intake':'Buyer profile']);
+        setTimeout(()=>{
+          // Flash BTS tab
+          document.getElementById('badge-bts').className='tab-badge busy';
+          toast('Your agent team is working — see Agent Activity tab');
+          if(role==='seller')btsSellerScript();
+          else btsBuyerScript();
+        },600);
+      }
+    },900);
+  },250);
+}
+
+function send(){
+  const inp=document.getElementById('chat-in');
+  const text=inp.value.trim();if(!text)return;
+  inp.value='';inp.style.height='auto';
+  addMsg('user-msgs','user','user','Me',text);
+  setTimeout(()=>{
+    addTyping();
+    setTimeout(()=>{
+      rmTyping();
+      addMsg('user-msgs','agent',cfg[role].avCls,cfg[role].avLbl,
+        'Got it — I\'ve noted that. Shall I continue, or is there anything else you want to add?',
+        {chips:['Continue','I have more to add','What happens next?']});
+    },1000);
+  },200);
+}
+
+function switchTab(t){
+  document.getElementById('tab-you').classList.toggle('active',t==='you');
+  document.getElementById('tab-bts').classList.toggle('active',t==='bts');
+  document.getElementById('pane-you').classList.toggle('active',t==='you');
+  document.getElementById('pane-bts').classList.toggle('active',t==='bts');
+}
+
+// ── START / BACK ──────────────────────────────────────────────────────
+function start(r){
+  role=r;
+  const c=cfg[r];
+  pipeline=c.pipeline.map(p=>({...p}));
+  appts=c.appts.map(a=>({...a}));
+  document.getElementById('role-screen').style.display='none';
+  document.getElementById('app-screen').classList.add('active');
+  document.getElementById('role-pill').textContent=c.pill;
+  document.getElementById('role-pill').style.display='inline';
+  document.getElementById('back-btn').style.display='inline';
+  renderPipeline();renderAppts();
+  const flow=r==='seller'?sellerScript:buyerScript;
+  setTimeout(()=>{
+    addTyping();
+    setTimeout(()=>{
+      rmTyping();
+      addMsg('user-msgs','agent',c.avCls,c.avLbl,flow[0].text,
+        {q:flow[0].q,chips:flow[0].chips});
+    },800);
+  },300);
+}
+
+function goBack(){
+  document.getElementById('role-screen').style.display='flex';
+  document.getElementById('app-screen').classList.remove('active');
+  document.getElementById('role-pill').style.display='none';
+  document.getElementById('back-btn').style.display='none';
+  document.getElementById('user-msgs').innerHTML='';
+  document.getElementById('bts-msgs').innerHTML='<div class="bts-empty" id="bts-empty"><div class="bts-icon">⚙️</div><p>Your agent is coordinating with the team behind the scenes. Their activity will appear here.</p></div>';
+  document.getElementById('badge-bts').className='tab-badge off';
+  role=null;pipeline=[];appts=[];
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+{
+  "property_id": "123_oak_ave",
+  "address": "123 Oak Avenue, Orange CA 92868",
+  "generated_at": "2026-03-27T20:23:31.737548",
+  "source": "Google Places API \u2014 live data",
+  "professionals": {
+    "photographer": {
+      "category_info": {
+        "why_needed": "Professional photos are the single most impactful thing you can do for your listing. Homes with pro photos sell faster and attract more serious buyers.",
+        "when_to_recommend": "Always \u2014 unless seller already has professional photos",
+        "typical_cost": "$150\u2013$400 depending on home size",
+        "urgency": "Book 5\u20137 days before listing goes live"
+      },
+      "results": [
+        {
+          "name": "[MOCK] Top Photographer Near Orange CA 92868",
+          "address": "Result requires GOOGLE_PLACES_API_KEY",
+          "rating": 4.9,
+          "review_count": 250,
+          "phone": "Set API key for live data",
+          "hours": null,
+          "website": null
+        }
+      ]
+    },
+    "inspector": {
+      "category_info": {
+        "why_needed": "A pre-listing inspection shows you exactly what a buyer's inspector will find \u2014 before they find it. Fixes issues proactively, prevents escrow surprises.",
+        "when_to_recommend": "Always for homes 15+ years old, or when condition flags exist",
+        "typical_cost": "$300\u2013$450 for a standard single-family home",
+        "urgency": "Schedule before listing goes live"
+      },
+      "results": [
+        {
+          "name": "[MOCK] Top Inspector Near Orange CA 92868",
+          "address": "Result requires GOOGLE_PLACES_API_KEY",
+          "rating": 4.9,
+          "review_count": 250,
+          "phone": "Set API key for live data",
+          "hours": null,
+          "website": null
+        }
+      ]
+    },
+    "termite": {
+      "category_info": {
+        "why_needed": "Termite inspection is required or expected in most California transactions. Better to know now than during escrow negotiations.",
+        "when_to_recommend": "Always in California",
+        "typical_cost": "$75\u2013$150 for inspection; treatment extra if needed",
+        "urgency": "Can happen anytime before escrow opens"
+      },
+      "results": [
+        {
+          "name": "[MOCK] Top Termite Near Orange CA 92868",
+          "address": "Result requires GOOGLE_PLACES_API_KEY",
+          "rating": 4.9,
+          "review_count": 250,
+          "phone": "Set API key for live data",
+          "hours": null,
+          "website": null
+        }
+      ]
+    },
+    "cleaner": {
+      "category_info": {
+        "why_needed": "A professional deep clean before photography makes a visible difference \u2014 especially kitchens, bathrooms, and windows.",
+        "when_to_recommend": "Always before photography shoot",
+        "typical_cost": "$200\u2013$400 for a thorough pre-listing clean",
+        "urgency": "Book 1\u20132 days before photo shoot"
+      },
+      "results": [
+        {
+          "name": "[MOCK] Top Cleaner Near Orange CA 92868",
+          "address": "Result requires GOOGLE_PLACES_API_KEY",
+          "rating": 4.9,
+          "review_count": 250,
+          "phone": "Set API key for live data",
+          "hours": null,
+          "website": null
+        }
+      ]
+    },
+    "attorney": {
+      "category_info": {
+        "why_needed": "As a FSBO seller, you're signing contracts directly. A real estate attorney can review offers before you accept \u2014 cost is $200\u2013$500 and can save you from unfavorable terms.",
+        "when_to_recommend": "First-time sellers, complex ownership situations, or when first offer arrives",
+        "typical_cost": "$200\u2013$500 for offer review; varies for full representation",
+        "urgency": "Have a contact ready before offers arrive"
+      },
+      "results": [
+        {
+          "name": "[MOCK] Top Attorney Near Orange CA 92868",
+          "address": "Result requires GOOGLE_PLACES_API_KEY",
+          "rating": 4.9,
+          "review_count": 250,
+          "phone": "Set API key for live data",
+          "hours": null,
+          "website": null
+        }
+      ]
+    },
+    "escrow": {
+      "category_info": {
+        "why_needed": "Escrow is required for all California real estate transactions. The escrow/title company holds funds and handles all closing paperwork.",
+        "when_to_recommend": "As soon as an offer is accepted",
+        "typical_cost": "0.5%\u20131% of sale price (split between buyer and seller)",
+        "urgency": "Open escrow within 1\u20133 days of accepted offer"
+      },
+      "results": [
+        {
+          "name": "[MOCK] Top Escrow Near Orange CA 92868",
+          "address": "Result requires GOOGLE_PLACES_API_KEY",
+          "rating": 4.9,
+          "review_count": 250,
+          "phone": "Set API key for live data",
+          "hours": null,
+          "website": null
+        }
+      ]
+    }
+  }
+}

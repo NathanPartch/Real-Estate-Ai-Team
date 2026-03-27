@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PropAgent — Seller Intake</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1814;--paper:#f7f4ef;--warm:#f0ebe2;
+  --accent:#c8602a;--accent-light:#f5e8df;
+  --muted:#8c8880;--border:#ddd8d0;
+  --green:#2a6b4a;--green-light:#e8f2ec;
+  --blue:#1a3a6b;--blue-light:#e8edf8;
+  --gold:#b8860b;--gold-light:#fdf6e3;
+  --red:#8b2020;--red-light:#fdf0f0;
+  --radius:12px;
+  --shadow:0 2px 16px rgba(26,24,20,.08);
+  --shadow-lg:0 8px 40px rgba(26,24,20,.14);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+header{background:var(--ink);color:var(--paper);padding:0 1.75rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
+.logo{font-family:'DM Serif Display',serif;font-size:1.35rem;letter-spacing:-.02em;text-decoration:none;color:var(--paper)}
+.logo em{color:var(--accent);font-style:italic}
+.hdr-right{display:flex;align-items:center;gap:.75rem}
+.hdr-btn{font-size:.8rem;color:rgba(247,244,239,.6);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;transition:color .15s;padding:0}
+.hdr-btn:hover{color:var(--paper)}
+.hdr-badge{font-size:.72rem;font-weight:500;background:var(--accent-light);color:var(--accent);padding:4px 10px;border-radius:20px}
+
+/* PAGE LAYOUT */
+.page{flex:1;display:flex;flex-direction:column;align-items:center;padding:2.5rem 1.5rem 4rem}
+.intake-wrap{width:100%;max-width:680px}
+
+/* PROGRESS */
+.progress-header{margin-bottom:1.75rem}
+.progress-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.progress-title{font-family:'DM Serif Display',serif;font-size:1.5rem}
+.progress-count{font-size:.8rem;color:var(--muted)}
+.progress-bar-bg{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.progress-bar-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .35s ease}
+.step-labels{display:flex;gap:.35rem;margin-top:.65rem;flex-wrap:wrap}
+.step-dot{font-size:.67rem;font-weight:500;letter-spacing:.04em;padding:3px 9px;border-radius:20px;background:var(--warm);color:var(--muted);transition:all .2s;cursor:default}
+.step-dot.done{background:var(--green-light);color:var(--green)}
+.step-dot.active{background:var(--accent-light);color:var(--accent)}
+
+/* CARD */
+.intake-card{background:white;border:1px solid var(--border);border-radius:16px;padding:2rem;box-shadow:var(--shadow);animation:fadeUp .25s ease}
+
+/* SECTION HEADER */
+.section-heading{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem}
+.section-icon{width:36px;height:36px;border-radius:10px;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem}
+.section-heading h2{font-family:'DM Serif Display',serif;font-size:1.2rem}
+.section-heading p{font-size:.82rem;color:var(--muted);margin-top:.1rem}
+
+/* FIELDS */
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-size:.78rem;font-weight:500;color:var(--muted);margin-bottom:.35rem;letter-spacing:.02em}
+.field label .req{color:var(--accent)}
+.field label .hint{font-weight:300;color:var(--muted);opacity:.8;margin-left:.35rem}
+.field input,.field select,.field textarea{width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);background:var(--warm);outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ink);background:white}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted)}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238c8880' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .9rem center;padding-right:2.5rem;cursor:pointer}
+.field textarea{resize:vertical;min-height:80px;line-height:1.6}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.85rem}
+@media(max-width:560px){.field-row,.field-row-3{grid-template-columns:1fr}}
+
+/* TOGGLE GROUP */
+.toggle-group{display:flex;gap:.5rem;flex-wrap:wrap}
+.toggle-opt{display:flex;align-items:center;gap:.4rem;padding:.5rem .85rem;border:1.5px solid var(--border);border-radius:8px;font-size:.84rem;cursor:pointer;transition:all .15s;background:var(--warm);color:var(--ink);user-select:none}
+.toggle-opt:hover{border-color:var(--muted)}
+.toggle-opt.selected{background:var(--accent-light);border-color:var(--accent);color:var(--accent);font-weight:500}
+.toggle-opt input[type=radio],.toggle-opt input[type=checkbox]{display:none}
+
+/* CHECKBOX ROW */
+.check-row{display:flex;align-items:flex-start;gap:.65rem;padding:.6rem 0;border-bottom:1px solid var(--border);cursor:pointer}
+.check-row:last-child{border:none}
+.check-box{width:18px;height:18px;border:1.5px solid var(--border);border-radius:4px;flex-shrink:0;margin-top:.1rem;display:flex;align-items:center;justify-content:center;transition:all .15s;background:var(--warm)}
+.check-row.checked .check-box{background:var(--ink);border-color:var(--ink)}
+.check-row.checked .check-box::after{content:'';width:10px;height:6px;border-left:2px solid white;border-bottom:2px solid white;transform:rotate(-45deg) translateY(-1px)}
+.check-label{font-size:.875rem;line-height:1.5;flex:1}
+
+/* IMPROVEMENT ROWS */
+.improvement-list{display:flex;flex-direction:column;gap:.6rem;margin-bottom:.75rem}
+.improvement-row{display:grid;grid-template-columns:1fr 90px 90px 32px;gap:.5rem;align-items:center}
+.improvement-row input{padding:.55rem .75rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.84rem;color:var(--ink);background:var(--warm);outline:none;transition:border-color .15s}
+.improvement-row input:focus{border-color:var(--ink);background:white}
+.improvement-row input::placeholder{color:var(--muted)}
+.remove-row{width:32px;height:32px;background:none;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .15s;flex-shrink:0}
+.remove-row:hover{border-color:var(--red);color:var(--red)}
+.add-row-btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--accent);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;padding:.3rem 0;transition:opacity .15s}
+.add-row-btn:hover{opacity:.7}
+
+/* DIVIDER */
+.section-divider{height:1px;background:var(--border);margin:1.5rem 0}
+.sub-label{font-size:.72rem;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:.85rem;margin-top:1.25rem}
+
+/* INLINE NOTE */
+.inline-note{background:var(--warm);border-radius:8px;padding:.7rem .9rem;font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem}
+.inline-note strong{color:var(--ink);font-weight:500}
+
+/* ALERT */
+.alert{border-radius:8px;padding:.7rem .9rem;font-size:.83rem;line-height:1.5;margin-bottom:1rem;display:flex;gap:.6rem;align-items:flex-start}
+.alert.warn{background:var(--gold-light);border:1px solid #e8d4a0;color:#7a5c08}
+.alert.info{background:var(--blue-light);border:1px solid #c0d0e8;color:#1a3a6b}
+.alert-icon{flex-shrink:0;margin-top:.05rem}
+
+/* NAV BUTTONS */
+.nav-row{display:flex;align-items:center;justify-content:space-between;margin-top:1.75rem;gap:1rem}
+.btn-back{display:inline-flex;align-items:center;gap:.4rem;padding:.7rem 1.1rem;border:1.5px solid var(--border);background:white;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.875rem;cursor:pointer;transition:all .15s;color:var(--muted)}
+.btn-back:hover{border-color:var(--ink);color:var(--ink)}
+.btn-next{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;background:var(--ink);color:var(--paper);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;transition:background .15s}
+.btn-next:hover{background:var(--accent)}
+.btn-next.accent{background:var(--accent)}
+.btn-next.accent:hover{background:#b05525}
+
+/* REVIEW SECTION */
+.review-group{margin-bottom:1.5rem}
+.review-group h3{font-size:.78rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.review-row{display:flex;gap.75rem;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.855rem}
+.review-row:last-child{border:none}
+.review-key{color:var(--muted);min-width:180px;flex-shrink:0;font-size:.82rem}
+.review-val{flex:1;color:var(--ink)}
+.review-val.unknown{color:var(--muted);font-style:italic}
+.review-val.warn{color:var(--gold)}
+
+/* SUCCESS */
+.success-screen{text-align:center;padding:2rem 1rem}
+.success-icon{width:64px;height:64px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.75rem;margin:0 auto 1.25rem}
+.success-screen h2{font-family:'DM Serif Display',serif;font-size:1.6rem;margin-bottom:.5rem}
+.success-screen p{font-size:.9rem;color:var(--muted);line-height:1.7;max-width:440px;margin:0 auto 1.5rem}
+.next-steps{background:var(--warm);border-radius:12px;padding:1.1rem 1.25rem;text-align:left;margin-bottom:1.5rem}
+.next-steps h4{font-size:.8rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem}
+.next-step-item{display:flex;gap:.75rem;align-items:flex-start;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.855rem}
+.next-step-item:last-child{border:none}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--ink);color:white;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:500;flex-shrink:0;margin-top:.05rem}
+
+/* CONDITIONAL FIELDS */
+.conditional{display:none}
+.conditional.show{display:block}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="dashboard.html">Prop<em>Agent</em></a>
+  <div class="hdr-right">
+    <span class="hdr-badge">Seller Intake</span>
+    <button class="hdr-btn" onclick="window.location='dashboard.html'">Back to dashboard</button>
+  </div>
+</header>
+
+<div class="page">
+  <div class="intake-wrap">
+
+    <!-- PROGRESS -->
+    <div class="progress-header">
+      <div class="progress-meta">
+        <span class="progress-title" id="progress-title">Property Basics</span>
+        <span class="progress-count" id="progress-count">Step 1 of 8</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-bar" style="width:12.5%"></div>
+      </div>
+      <div class="step-labels" id="step-labels"></div>
+    </div>
+
+    <!-- CARD -->
+    <div class="intake-card" id="intake-card">
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- STEP 1 — PROPERTY BASICS -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="step-panel" id="step-1">
+        <div class="section-heading">
+          <div class="section-icon">🏠</div>
+          <div>
+            <h2>Property Basics</h2>
+            <p>Tell us about the property you're listing.</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Street address <span class="req">*</span></label>
+          <input type="text" id="address" placeholder="e.g. 123 Oak Avenue" autocomplete="street-address">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>City <span class="req">*</span></label>
+            <input type="text" id="city" placeholder="e.g. Orange" autocomplete="address-level2">
+          </div>
+          <div class="field">
+            <label>State <span class="req">*</span></label>
+            <select id="state">
+              <option value="">Select state</option>
+              <option>AL</option><option>AK</option><option>AZ</option><option>AR</option>
+              <option selected>CA</option><option>CO</option><option>CT</option><option>DE</option>
+              <option>FL</option><option>GA</option><option>HI</option><option>ID</option>
+              <option>IL</option><option>IN</option><option>IA</option><option>KS</option>
+              <option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+              <option>MA</option><option>MI</option><option>MN</option><option>MS</option>
+              <option>MO</option><option>MT</option><option>NE</option><option>NV</option>
+              <option>NH</option><option>NJ</option><option>NM</option><option>NY</option>
+              <option>NC</option><option>ND</option><option>OH</option><option>OK</option>
+              <option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+              <option>SD</option><option>TN</option><option>TX</option><option>UT</option>
+              <option>VT</option><option>VA</option><option>WA</option><option>WV</option>
+              <option>WI</option><option>WY</option>
+            </select>
+          </div>
+        </div>
+        <div class="field" style="max-width:180px">
+          <label>ZIP code <span class="req">*</span></label>
+          <input type="text" id="zip" placeholder="e.g. 92868" maxlength="10">
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="field">
+          <label>Property type <span class="req">*</span></label>
+          <div class="toggle-group" id="prop-type-group">
+            <label class="toggle-opt"><input type="radio" name="prop_type" value="SFR"> Single Family</label>
+            <label class="toggle-opt"><input type="radio" name="prop_type" value="Condo"> Condo</label>
+            <label class="toggle-opt"><input type="radio" name="prop_type" value="Townhouse"> Townhouse</label>
+            <label class="toggle-opt"><input type="radio" name="prop_type" value="Multi-unit"> Multi-unit</label>
+            <label class="toggle-opt"><input type="radio" name="prop_type" value="Land"> Land</label>
+          </div>
+        </div>
+
+        <div class="field-row-3">
+          <div class="field">
+            <label>Year built <span class="req">*</span></label>
+            <input type="number" id="year-built" placeholder="e.g. 1998" min="1800" max="2025">
+          </div>
+          <div class="field">
+            <label>Stories</label>
+            <select id="stories">
+              <option value="">—</option>
+              <option>1</option><option>2</option><option>3</option><option>Split-level</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Sq ft (living) <span class="req">*</span></label>
+            <input type="number" id="sqft" placeholder="e.g. 1850" min="100">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Lot size <span class="hint">(leave blank if condo/attached)</span></label>
+          <div class="field-row">
+            <input type="number" id="lot-size" placeholder="e.g. 6500">
+            <select id="lot-unit">
+              <option value="sqft">sq ft</option>
+              <option value="acres">acres</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Bedrooms <span class="req">*</span></label>
+            <select id="bedrooms">
+              <option value="">—</option>
+              <option>Studio</option><option>1</option><option>2</option><option>3</option>
+              <option>4</option><option>5</option><option>6</option><option>7+</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Full bathrooms <span class="req">*</span></label>
+            <select id="baths-full">
+              <option value="">—</option>
+              <option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option>
+            </select>
+          </div>
+        </div>
+        <div class="field" style="max-width:200px">
+          <label>Half bathrooms</label>
+          <select id="baths-half">
+            <option value="0">0</option>
+            <option>1</option><option>2</option>
+          </select>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="field">
+          <label>Garage / parking</label>
+          <div class="toggle-group" id="garage-group">
+            <label class="toggle-opt"><input type="radio" name="garage" value="None"> None</label>
+            <label class="toggle-opt"><input type="radio" name="garage" value="Attached"> Attached</label>
+            <label class="toggle-opt"><input type="radio" name="garage" value="Detached"> Detached</label>
+            <label class="toggle-opt"><input type="radio" name="garage" value="Carport"> Carport</label>
+          </div>
+        </div>
+        <div class="field conditional" id="garage-cars-field">
+          <label>How many cars?</label>
+          <div class="toggle-group" id="garage-cars-group">
+            <label class="toggle-opt"><input type="radio" name="garage_cars" value="1"> 1</label>
+            <label class="toggle-opt"><input type="radio" name="garage_cars" value="2"> 2</label>
+            <label class="toggle-opt"><input type="radio" name="garage_cars" value="3"> 3</label>
+            <label class="toggle-opt"><input type="radio" name="garage_cars" value="4+"> 4+</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Pool or spa?</label>
+          <div class="toggle-group" id="pool-group">
+            <label class="toggle-opt"><input type="radio" name="pool" value="None"> None</label>
+            <label class="toggle-opt"><input type="radio" name="pool" value="Pool only"> Pool only</label>
+            <label class="toggle-opt"><input type="radio" name="pool" value="Spa only"> Spa only</label>
+            <label class="toggle-opt"><input type="radio" name="pool" value="Pool + spa"> Pool + spa</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>HOA?</label>
+          <div class="toggle-group" id="hoa-group">
+            <label class="toggle-opt"><input type="radio" name="hoa" value="No"> No HOA</label>
+            <label class="toggle-opt"><input type="radio" name="hoa" value="Yes"> Yes, there's an HOA</label>
+            <label class="toggle-opt"><input type="radio" name="hoa" value="Unknown"> Not sure</label>
+          </div>
+        </div>
+        <div class="conditional" id="hoa-details">
+          <div class="field-row">
+            <div class="field">
+              <label>HOA name</label>
+              <input type="text" id="hoa-name" placeholder="e.g. Oak Hills HOA">
+            </div>
+            <div class="field">
+              <label>Monthly dues</label>
+              <input type="number" id="hoa-dues" placeholder="e.g. 250">
+            </div>
+          </div>
+          <div class="field">
+            <label>Known assessments or special charges? <span class="hint">(optional)</span></label>
+            <input type="text" id="hoa-assessments" placeholder="e.g. $5,000 roof reserve assessment 2025">
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <span></span>
+          <button class="btn-next" onclick="nextStep()">Continue <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- STEP 2 — OCCUPANCY & FINANCIALS -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="step-panel" id="step-2" style="display:none">
+        <div class="section-heading">
+          <div class="section-icon">💰</div>
+          <div>
+            <h2>Occupancy &amp; Financials</h2>
+            <p>Current status and key financial details.</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Current occupancy status <span class="req">*</span></label>
+          <div class="toggle-group" id="occupancy-group">
+            <label class="toggle-opt"><input type="radio" name="occupancy" value="Owner-occupied"> Owner-occupied</label>
+            <label class="toggle-opt"><input type="radio" name="occupancy" value="Tenant-occupied"> Tenant-occupied</label>
+            <label class="toggle-opt"><input type="radio" name="occupancy" value="Vacant"> Vacant</label>
+          </div>
+        </div>
+
+        <div class="conditional" id="tenant-fields">
+          <div class="alert info">
+            <span class="alert-icon">ℹ️</span>
+            <span>California law requires <strong>24 hours written notice</strong> before any showing of a tenant-occupied property. This will be flagged in your listing.</span>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Lease expiration date</label>
+              <input type="date" id="lease-exp">
+            </div>
+            <div class="field">
+              <label>Current monthly rent</label>
+              <input type="number" id="monthly-rent" placeholder="e.g. 2800">
+            </div>
+          </div>
+          <div class="field">
+            <label>Is the tenant staying (lease transfers to buyer)?</label>
+            <div class="toggle-group" id="tenant-staying-group">
+              <label class="toggle-opt"><input type="radio" name="tenant_staying" value="Yes"> Yes</label>
+              <label class="toggle-opt"><input type="radio" name="tenant_staying" value="No"> No — vacating before close</label>
+              <label class="toggle-opt"><input type="radio" name="tenant_staying" value="Unknown"> Not yet decided</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Preferred notice method for tenant <span class="hint">(for showing coordination)</span></label>
+            <div class="toggle-group" id="tenant-notice-group">
+              <label class="toggle-opt"><input type="radio" name="tenant_notice" value="Email"> Email</label>
+              <label class="toggle-opt"><input type="radio" name="tenant_notice" value="Text"> Text</label>
+              <label class="toggle-opt"><input type="radio" name="tenant_notice" value="Written letter"> Written letter</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="conditional" id="rentroll-fields">
+          <div class="field">
+            <label>Rent roll summary <span class="hint">(for multi-unit — list each unit and rent)</span></label>
+            <textarea id="rent-roll" placeholder="e.g.&#10;Unit 1A — 2bd/1ba — $1,850/mo — lease expires 08/2025&#10;Unit 1B — 1bd/1ba — $1,400/mo — month-to-month"></textarea>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Asking price <span class="req">*</span></label>
+            <input type="number" id="asking-price" placeholder="e.g. 875000">
+          </div>
+          <div class="field">
+            <label>Annual property taxes <span class="req">*</span></label>
+            <input type="number" id="annual-taxes" placeholder="e.g. 9200">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Mello-Roos or special district taxes?</label>
+          <div class="toggle-group" id="mello-group">
+            <label class="toggle-opt"><input type="radio" name="mello" value="No"> No</label>
+            <label class="toggle-opt"><input type="radio" name="mello" value="Yes"> Yes</label>
+            <label class="toggle-opt"><input type="radio" name="mello" value="Unknown"> Not sure</label>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn-back" onclick="prevStep()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg> Back</button>
+          <button class="btn-next" onclick="nextStep()">Continue <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- STEP 3 — CONDITION & IMPROVEMENTS -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="step-panel" id="step-3" style="display:none">
+        <div class="section-heading">
+          <div class="section-icon">🔧</div>
+          <div>
+            <h2>Condition &amp; Improvements</h2>
+            <p>Systems, maintenance history, and recent work.</p>
+          </div>
+        </div>
+
+        <p class="sub-label">Major systems</p>
+        <div class="field-row">
+          <div class="field">
+            <label>Roof — age (years) <span class="hint">or "unknown"</span></label>
+            <input type="text" id="roof-age" placeholder="e.g. 8 years">
+          </div>
+          <div class="field">
+            <label>Roof material</label>
+            <select id="roof-material">
+              <option value="">— select —</option>
+              <option>Composition shingle</option>
+              <option>Tile (clay)</option>
+              <option>Tile (concrete)</option>
+              <option>Flat / TPO</option>
+              <option>Metal</option>
+              <option>Wood shake</option>
+              <option>Unknown</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Known roof issues? <span class="hint">(optional)</span></label>
+          <input type="text" id="roof-issues" placeholder="e.g. Small leak above garage patched 2024, not yet repaired">
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>HVAC type</label>
+            <select id="hvac-type">
+              <option value="">— select —</option>
+              <option>Central A/C + forced air heat</option>
+              <option>Mini-split (ductless)</option>
+              <option>Window units only</option>
+              <option>Evaporative cooler</option>
+              <option>Heat pump</option>
+              <option>No A/C</option>
+              <option>Unknown</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>HVAC age (years)</label>
+            <input type="text" id="hvac-age" placeholder="e.g. 5 years">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Water heater type</label>
+            <select id="wh-type">
+              <option value="">— select —</option>
+              <option>Traditional tank — gas</option>
+              <option>Traditional tank — electric</option>
+              <option>Tankless — gas</option>
+              <option>Tankless — electric</option>
+              <option>Solar</option>
+              <option>Unknown</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Water heater age (years)</label>
+            <input type="text" id="wh-age" placeholder="e.g. 3 years">
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+        <p class="sub-label">Improvements — last 10 years</p>
+        <div class="inline-note">List each improvement made since <strong>2016</strong>. Include year and approximate cost. Leave blank if none.</div>
+
+        <div class="improvement-list" id="improvement-list">
+          <div class="improvement-row">
+            <input type="text" placeholder="Description (e.g. Kitchen remodel)">
+            <input type="number" placeholder="Year">
+            <input type="number" placeholder="Cost ($)">
+            <button class="remove-row" onclick="removeImpRow(this)" title="Remove">✕</button>
+          </div>
+        </div>
+        <button class="add-row-btn" onclick="addImpRow()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7 4v6M4 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Add improvement
+        </button>
+
+        <div class="section-divider"></div>
+        <p class="sub-label">Disclosures &amp; known issues</p>
+
+        <div class="field">
+          <label>Any known unpermitted work?</label>
+          <div class="toggle-group" id="unpermitted-group">
+            <label class="toggle-opt"><input type="radio" name="unpermitted" value="No"> No</label>
+            <label class="toggle-opt"><input type="radio" name="unpermitted" value="Yes"> Yes</label>
+            <label class="toggle-opt"><input type="radio" name="unpermitted" value="Unknown"> Not sure</label>
+          </div>
+        </div>
+        <div class="conditional" id="unpermitted-detail">
+          <div class="field">
+            <label>Describe the unpermitted work</label>
+            <textarea id="unpermitted-desc" placeholder="e.g. Garage converted to living space without permit, approx. 2018"></textarea>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Any open permits?</label>
+          <div class="toggle-group" id="open-permits-group">
+            <label class="toggle-opt"><input type="radio" name="open_permits" value="No"> No</label>
+            <label class="toggle-opt"><input type="radio" name="open_permits" value="Yes"> Yes</label>
+            <label class="toggle-opt"><input type="radio" name="open_permits" value="Unknown"> Not sure</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Active liens, easements, or encumbrances?</label>
+          <div class="toggle-group" id="liens-group">
+            <label class="toggle-opt"><input type="radio" name="liens" value="No"> No</label>
+            <label class="toggle-opt"><input type="radio" name="liens" value="Yes"> Yes</label>
+            <label class="toggle-opt"><input type="radio" name="liens" value="Unknown"> Not sure</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Insurance claims in the last 5 years?</label>
+          <div class="toggle-group" id="insurance-group">
+            <label class="toggle-opt"><input type="radio" name="insurance" value="No"> No</label>
+            <label class="toggle-opt"><input type="radio" name="insurance" value="Yes"> Yes — will disclose</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Any pest or mold history?</label>
+          <div class="toggle-group" id="pest-group">
+            <label class="toggle-opt"><input type="radio" name="pest" value="No"> No</label>
+            <label class="toggle-opt"><input type="radio" name="pest" value="Yes"> Yes — will disclose</label>
+            <label class="toggle-opt"><input type="radio" name="pest" value="Unknown"> Not sure</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Any deferred maintenance you're aware of?</label>
+          <textarea id="deferred-maint" placeholder="e.g. Exterior paint needs refreshing, back fence has a broken post"></textarea>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn-back" onclick="prevStep()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg> Back</button>
+          <button class="btn-next" onclick="nextStep()">Continue <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- STEP 4 — UNIQUE FEATURES -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="step-panel" id="step-4" style="display:none">
+        <div class="section-heading">
+          <div class="section-icon">✨</div>
+          <div>
+            <h2>Unique Features</h2>
+            <p>What makes this property stand out?</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>What makes this property different from others nearby?</label>
+          <textarea id="unique-features" placeholder="e.g. Corner lot with extra privacy, oversized 3-car garage, walking distance to downtown"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Any features hard to find in this ZIP code?</label>
+          <textarea id="rare-features" placeholder="e.g. Large flat lot for the area, permitted ADU, RV access"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Views, privacy, lot shape, orientation, or unusual zoning?</label>
+          <textarea id="lot-features" placeholder="e.g. South-facing backyard, hill views from master, cul-de-sac location"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Seller disclosures already prepared?</label>
+          <div class="toggle-group" id="disclosures-group">
+            <label class="toggle-opt"><input type="radio" name="disclosures" value="Yes"> Yes — have them</label>
+            <label class="toggle-opt"><input type="radio" name="disclosures" value="In progress"> In progress</label>
+            <label class="toggle-opt"><input type="radio" name="disclosures" value="No"> Not yet</label>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn-back" onclick="prevStep()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg> Back</button>
+          <button class="btn-next" onclick="nextStep()">Continue <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- STEP 5 — PHOTOS & MEDIA -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="step-panel" id="step-5" style="display:none">
+        <div class="section-heading">
+          <div class="section-icon">📷</div>
+          <div>
+            <h2>Photos &amp; Media</h2>
+            <p>Help buyers visualize the property online.</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Professional listing photos available?</label>
+          <div class="toggle-group" id="photos-group">
+            <label class="toggle-opt"><input type="radio" name="photos" value="Yes — ready"> Yes — ready to upload</label>
+            <label class="toggle-opt"><input type="radio" name="photos" value="Yes — scheduled"> Shoot scheduled</label>
+            <label class="toggle-opt"><input type="radio" name="photos" value="No"> Not yet</label>
+          </div>
+        </div>
+        <div class="conditional" id="photos-date-field">
+          <div class="field" style="max-width:240px">
+            <label>Shoot date</label>
+            <input type="date" id="photo-date">
+          </div>
+        </div>
+        <div class="conditional" id="photos-count-field">
+          <div class="field" style="max-width:180px">
+            <label>Approximate number of photos</label>
+            <input type="number" id="photo-count" placeholder="e.g. 28">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Drone / aerial photos?</label>
+          <div class="toggle-group" id="drone-group">
+            <label class="toggle-opt"><input type="radio" name="drone" value="Yes"> Yes</label>
+            <label class="toggle-opt"><input type="radio" name="drone" value="No"> No</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Virtual tour or video walkthrough?</label>
+          <div class="toggle-group" id="vtour-group">
+            <label class="toggle-opt"><input type="radio" name="vtour" value="Yes"> Yes</label>
+            <label class="toggle-opt"><input type="radio" name="vtour" value="No"> No</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Floor plan available?</label>
+          <div class="toggle-group" id="floorplan-group">
+            <label class="toggle-opt"><input type="radio" name="floorplan" value="Yes"> Yes</label>
+            <label class="toggle-opt"><input type="radio" name="floorplan" value="No"> No</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>3D scan available? <span class="hint">(Matterport, etc.)</span></label>
+          <div class="toggle-group" id="scan3d-group">
+            <label class="toggle-opt"><input type="radio" name="scan3d" value="Yes"> Yes</label>
+            <label class="toggle-opt"><input type="radio" name="scan3d" value="No"> No</label>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn-back" onclick="prevStep()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg> Back</button>
+          <button class="btn-next" onclick="nextStep()">Continue <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- STEP 6 — SELLER PREFERENCES -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="step-panel" id="step-6" style="display:none">
+        <div class="section-heading">
+          <div class="section-icon">📋</div>
+          <div>
+            <h2>Seller Preferences</h2>
+            <p>Your goals and any terms important to you.</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Target close date <span class="hint">(approximate)</span></label>
+          <input type="date" id="target-close">
+        </div>
+
+        <div class="field">
+          <label>Any offers already received?</label>
+          <div class="toggle-group" id="offers-group">
+            <label class="toggle-opt"><input type="radio" name="offers" value="No"> No</label>
+            <label class="toggle-opt"><input type="radio" name="offers" value="Yes"> Yes</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Open to owner financing or lease-option?</label>
+          <div class="toggle-group" id="financing-group">
+            <label class="toggle-opt"><input type="radio" name="owner_finance" value="No"> No</label>
+            <label class="toggle-opt"><input type="radio" name="owner_finance" value="Open to discussing"> Open to it</label>
+            <label class="toggle-opt"><input type="radio" name="owner_finance" value="Yes"> Yes</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Items included in the sale <span class="hint">(optional)</span></label>
+          <textarea id="items-included" placeholder="e.g. Refrigerator, washer/dryer, chandelier in dining room"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Items excluded from the sale <span class="hint">(optional)</span></label>
+          <textarea id="items-excluded" placeholder="e.g. Backyard play structure, living room curtains"></textarea>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn-back" onclick="prevStep()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg> Back</button>
+          <button class="btn-next" onclick="nextStep()">Continue <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- STEP 7 — SHOWING AVAILABILITY -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="step-panel" id="step-7" style="display:none">
+        <div class="section-heading">
+          <div class="section-icon">🗓</div>
+          <div>
+            <h2>Showing Availability</h2>
+            <p>This section must be complete before your listing goes live.</p>
+          </div>
+        </div>
+
+        <p class="sub-label">Availability &amp; notice</p>
+
+        <div class="field">
+          <label>Which days can buyers tour the home? <span class="req">*</span></label>
+          <div class="toggle-group" id="showing-days-group">
+            <label class="toggle-opt"><input type="checkbox" name="showing_days" value="Mon"> Mon</label>
+            <label class="toggle-opt"><input type="checkbox" name="showing_days" value="Tue"> Tue</label>
+            <label class="toggle-opt"><input type="checkbox" name="showing_days" value="Wed"> Wed</label>
+            <label class="toggle-opt"><input type="checkbox" name="showing_days" value="Thu"> Thu</label>
+            <label class="toggle-opt"><input type="checkbox" name="showing_days" value="Fri"> Fri</label>
+            <label class="toggle-opt"><input type="checkbox" name="showing_days" value="Sat"> Sat</label>
+            <label class="toggle-opt"><input type="checkbox" name="showing_days" value="Sun"> Sun</label>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Earliest showing time <span class="req">*</span></label>
+            <select id="showing-start">
+              <option value="">—</option>
+              <option>7:00 AM</option><option>8:00 AM</option><option>9:00 AM</option>
+              <option>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option>
+              <option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option><option>5:00 PM</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Latest showing time <span class="req">*</span></label>
+            <select id="showing-end">
+              <option value="">—</option>
+              <option>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option>
+              <option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option>
+              <option>5:00 PM</option><option>6:00 PM</option><option>7:00 PM</option><option>8:00 PM</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>How much advance notice do you need? <span class="req">*</span></label>
+          <div class="toggle-group" id="notice-group">
+            <label class="toggle-opt"><input type="radio" name="notice" value="Same day OK"> Same day OK</label>
+            <label class="toggle-opt"><input type="radio" name="notice" value="2 hours"> 2 hours</label>
+            <label class="toggle-opt"><input type="radio" name="notice" value="24 hours"> 24 hours</label>
+            <label class="toggle-opt"><input type="radio" name="notice" value="48 hours"> 48 hours</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Any completely off-limits times? <span class="hint">(optional)</span></label>
+          <input type="text" id="blackout-times" placeholder="e.g. Sunday mornings, Tuesday evenings after 7 PM">
+        </div>
+
+        <div class="section-divider"></div>
+        <p class="sub-label">Access &amp; logistics</p>
+
+        <div class="field">
+          <label>Will you be home during showings? <span class="req">*</span></label>
+          <div class="toggle-group" id="home-during-group">
+            <label class="toggle-opt"><input type="radio" name="home_during" value="Yes — will leave"> Home but will leave</label>
+            <label class="toggle-opt"><input type="radio" name="home_during" value="Property vacant"> Property is vacant</label>
+            <label class="toggle-opt"><input type="radio" name="home_during" value="Tenant-occupied"> Tenant-occupied</label>
+          </div>
+        </div>
+
+        <div class="field conditional" id="lockbox-field">
+          <label>Lockbox or key arrangement?</label>
+          <div class="toggle-group" id="lockbox-group">
+            <label class="toggle-opt"><input type="radio" name="lockbox" value="Lockbox on door"> Lockbox on door</label>
+            <label class="toggle-opt"><input type="radio" name="lockbox" value="Key at agent office"> Key at agent office</label>
+            <label class="toggle-opt"><input type="radio" name="lockbox" value="Contact to arrange"> Contact to arrange</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Gate code or security system to disarm before entry?</label>
+          <div class="toggle-group" id="gate-group">
+            <label class="toggle-opt"><input type="radio" name="gate" value="No"> No</label>
+            <label class="toggle-opt"><input type="radio" name="gate" value="Yes — gate code"> Yes — gate code</label>
+            <label class="toggle-opt"><input type="radio" name="gate" value="Yes — security system"> Yes — security system</label>
+            <label class="toggle-opt"><input type="radio" name="gate" value="Both"> Both</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Pets that need to be secured before showings?</label>
+          <div class="toggle-group" id="pets-group">
+            <label class="toggle-opt"><input type="radio" name="pets" value="No pets"> No pets</label>
+            <label class="toggle-opt"><input type="radio" name="pets" value="Yes — will secure"> Yes — will secure</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Parking instructions for visitors? <span class="hint">(optional)</span></label>
+          <input type="text" id="parking-instructions" placeholder="e.g. Street parking only, use driveway, HOA visitor spots on east side">
+        </div>
+
+        <div class="field">
+          <label>Any other access instructions? <span class="hint">(optional)</span></label>
+          <textarea id="access-notes" placeholder="e.g. Ring doorbell twice, use side gate if no answer, dog door locked during showings"></textarea>
+        </div>
+
+        <div class="section-divider"></div>
+        <p class="sub-label">Contact for showings</p>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Showing contact phone <span class="req">*</span></label>
+            <input type="tel" id="showing-phone" placeholder="(555) 000-0000">
+          </div>
+          <div class="field">
+            <label>Preferred contact method <span class="req">*</span></label>
+            <div class="toggle-group" id="contact-pref-group">
+              <label class="toggle-opt"><input type="radio" name="contact_pref" value="Call"> Call</label>
+              <label class="toggle-opt"><input type="radio" name="contact_pref" value="Text"> Text</label>
+              <label class="toggle-opt"><input type="radio" name="contact_pref" value="Either"> Either</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Backup contact name <span class="hint">(first name only, optional)</span></label>
+            <input type="text" id="backup-name" placeholder="e.g. Alex">
+          </div>
+          <div class="field">
+            <label>Backup contact phone</label>
+            <input type="tel" id="backup-phone" placeholder="(555) 000-0000">
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+        <p class="sub-label">Open house &amp; blackout dates</p>
+
+        <div class="field">
+          <label>Are you open to hosting an open house?</label>
+          <div class="toggle-group" id="openhouse-group">
+            <label class="toggle-opt"><input type="radio" name="open_house" value="Yes"> Yes</label>
+            <label class="toggle-opt"><input type="radio" name="open_house" value="No"> No</label>
+            <label class="toggle-opt"><input type="radio" name="open_house" value="Maybe later"> Maybe later</label>
+          </div>
+        </div>
+        <div class="conditional" id="openhouse-details">
+          <div class="field-row">
+            <div class="field">
+              <label>Preferred day</label>
+              <div class="toggle-group" id="oh-day-group">
+                <label class="toggle-opt"><input type="radio" name="oh_day" value="Saturday"> Saturday</label>
+                <label class="toggle-opt"><input type="radio" name="oh_day" value="Sunday"> Sunday</label>
+              </div>
+            </div>
+            <div class="field">
+              <label>Preferred time</label>
+              <div class="toggle-group" id="oh-time-group">
+                <label class="toggle-opt"><input type="radio" name="oh_time" value="12–3 PM"> 12–3 PM</label>
+                <label class="toggle-opt"><input type="radio" name="oh_time" value="1–4 PM"> 1–4 PM</label>
+                <label class="toggle-opt"><input type="radio" name="oh_time" value="Other"> Other</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Any upcoming dates the property is unavailable for showings? <span class="hint">(optional)</span></label>
+          <input type="text" id="blackout-dates" placeholder="e.g. March 28–April 2 (vacation), April 15 (work being done)">
+        </div>
+
+        <div class="nav-row">
+          <button class="btn-back" onclick="prevStep()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg> Back</button>
+          <button class="btn-next" onclick="nextStep()">Continue <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- STEP 8 — REVIEW & SUBMIT -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="step-panel" id="step-8" style="display:none">
+        <div class="section-heading">
+          <div class="section-icon">✅</div>
+          <div>
+            <h2>Review &amp; Submit</h2>
+            <p>Confirm everything looks right before we begin.</p>
+          </div>
+        </div>
+
+        <div id="review-content">
+          <!-- populated by JS -->
+        </div>
+
+        <div class="alert warn" style="margin-top:1rem">
+          <span class="alert-icon">⚠️</span>
+          <span><strong>Important:</strong> Our listing agent will contact you to verify historical facts and specialist agent findings before your listing is published. Nothing goes live without your approval.</span>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn-back" onclick="prevStep()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg> Back</button>
+          <button class="btn-next accent" onclick="submitIntake()">Submit intake <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SUCCESS -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="step-panel" id="step-success" style="display:none">
+        <div class="success-screen">
+          <div class="success-icon">🎉</div>
+          <h2>Intake complete</h2>
+          <p>Your property information has been received. Our listing agent is now reviewing your submission and will reach out to verify a few details before anything goes live.</p>
+
+          <div class="next-steps">
+            <h4>What happens next</h4>
+            <div class="next-step-item">
+              <div class="step-num">1</div>
+              <div>Our listing agent reviews your intake and flags any gaps or questions.</div>
+            </div>
+            <div class="next-step-item">
+              <div class="step-num">2</div>
+              <div>Market analysis and due diligence run in the background — usually within 24 hours.</div>
+            </div>
+            <div class="next-step-item">
+              <div class="step-num">3</div>
+              <div>We contact you to confirm a few historical facts and share what the analysis found.</div>
+            </div>
+            <div class="next-step-item">
+              <div class="step-num">4</div>
+              <div>You approve the final listing draft before it goes anywhere.</div>
+            </div>
+          </div>
+
+          <button class="btn-next" onclick="window.location='dashboard.html'">Go to dashboard <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button>
+        </div>
+      </div>
+
+    </div><!-- /intake-card -->
+  </div><!-- /intake-wrap -->
+</div><!-- /page -->
+
+<script>
+const STEPS = [
+  { id:'step-1', label:'Property' },
+  { id:'step-2', label:'Financials' },
+  { id:'step-3', label:'Condition' },
+  { id:'step-4', label:'Features' },
+  { id:'step-5', label:'Photos' },
+  { id:'step-6', label:'Preferences' },
+  { id:'step-7', label:'Showings' },
+  { id:'step-8', label:'Review' },
+];
+let currentStep = 1;
+
+// ── Init ──────────────────────────────────────────────────────────
+function init() {
+  renderStepDots();
+  wireToggles();
+  wireConditionals();
+}
+
+// ── Step dots ─────────────────────────────────────────────────────
+function renderStepDots() {
+  const el = document.getElementById('step-labels');
+  el.innerHTML = STEPS.map((s, i) => {
+    const n = i + 1;
+    const cls = n < currentStep ? 'done' : n === currentStep ? 'active' : '';
+    return `<span class="step-dot ${cls}">${s.label}</span>`;
+  }).join('');
+}
+
+function updateProgress() {
+  const pct = (currentStep / STEPS.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-count').textContent = `Step ${currentStep} of ${STEPS.length}`;
+  document.getElementById('progress-title').textContent = STEPS[currentStep - 1].label === 'Review'
+    ? 'Review & Submit' : STEPS[currentStep - 1].label === 'Property'
+    ? 'Property Basics' : STEPS[currentStep - 1].label + (
+      ['Financials','Condition','Features','Photos','Preferences','Showings'].includes(STEPS[currentStep-1].label)
+        ? '' : '');
+  // map label to friendlier title
+  const titles = {
+    'Property':'Property Basics','Financials':'Occupancy & Financials',
+    'Condition':'Condition & Improvements','Features':'Unique Features',
+    'Photos':'Photos & Media','Preferences':'Seller Preferences',
+    'Showings':'Showing Availability','Review':'Review & Submit'
+  };
+  document.getElementById('progress-title').textContent = titles[STEPS[currentStep-1].label] || STEPS[currentStep-1].label;
+  renderStepDots();
+  // scroll to top of card
+  document.getElementById('intake-card').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ── Navigation ────────────────────────────────────────────────────
+function nextStep() {
+  if (currentStep === STEPS.length) return;
+  if (currentStep === STEPS.length - 1) buildReview();
+  document.getElementById('step-' + currentStep).style.display = 'none';
+  currentStep++;
+  document.getElementById('step-' + currentStep).style.display = 'block';
+  updateProgress();
+}
+
+function prevStep() {
+  if (currentStep <= 1) return;
+  document.getElementById('step-' + currentStep).style.display = 'none';
+  currentStep--;
+  document.getElementById('step-' + currentStep).style.display = 'block';
+  updateProgress();
+}
+
+// ── Toggle groups (radio + checkbox) ─────────────────────────────
+function wireToggles() {
+  document.querySelectorAll('.toggle-opt input').forEach(input => {
+    input.addEventListener('change', () => {
+      if (input.type === 'radio') {
+        document.querySelectorAll(`.toggle-opt input[name="${input.name}"]`).forEach(r => {
+          r.closest('.toggle-opt').classList.remove('selected');
+        });
+        input.closest('.toggle-opt').classList.add('selected');
+      } else {
+        input.closest('.toggle-opt').classList.toggle('selected', input.checked);
+      }
+    });
+  });
+}
+
+// ── Conditionals ──────────────────────────────────────────────────
+function wireConditionals() {
+  // Garage cars
+  wireRadioConditional('garage', ['Attached','Detached','Carport'], 'garage-cars-field');
+  // HOA details
+  wireRadioConditional('hoa', ['Yes'], 'hoa-details');
+  // Tenant fields
+  wireRadioConditional('occupancy', ['Tenant-occupied'], 'tenant-fields');
+  // Rent roll
+  wireRadioConditional('occupancy', ['Tenant-occupied'], 'rentroll-fields', false); // also for multi-unit but we show on tenant
+  // Unpermitted detail
+  wireRadioConditional('unpermitted', ['Yes'], 'unpermitted-detail');
+  // Lockbox
+  wireRadioConditional('home_during', ['Property vacant','Tenant-occupied'], 'lockbox-field');
+  // Open house details
+  wireRadioConditional('open_house', ['Yes'], 'openhouse-details');
+  // Photos date vs count
+  wirePhotoConditionals();
+}
+
+function wireRadioConditional(name, showValues, targetId) {
+  document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+    r.addEventListener('change', () => {
+      const show = showValues.includes(r.value) && r.checked;
+      const el = document.getElementById(targetId);
+      if (el) el.classList.toggle('show', show);
+    });
+  });
+}
+
+function wirePhotoConditionals() {
+  document.querySelectorAll('input[name="photos"]').forEach(r => {
+    r.addEventListener('change', () => {
+      document.getElementById('photos-date-field').classList.toggle('show', r.value === 'Yes — scheduled');
+      document.getElementById('photos-count-field').classList.toggle('show', r.value === 'Yes — ready');
+    });
+  });
+}
+
+// ── Improvement rows ──────────────────────────────────────────────
+function addImpRow() {
+  const list = document.getElementById('improvement-list');
+  const row = document.createElement('div');
+  row.className = 'improvement-row';
+  row.innerHTML = `
+    <input type="text" placeholder="Description (e.g. New HVAC)">
+    <input type="number" placeholder="Year">
+    <input type="number" placeholder="Cost ($)">
+    <button class="remove-row" onclick="removeImpRow(this)" title="Remove">✕</button>`;
+  list.appendChild(row);
+}
+
+function removeImpRow(btn) {
+  const list = document.getElementById('improvement-list');
+  if (list.children.length > 1) btn.closest('.improvement-row').remove();
+}
+
+// ── Review ────────────────────────────────────────────────────────
+function buildReview() {
+  const r = collectFormData();
+  const el = document.getElementById('review-content');
+
+  function rv(val) {
+    if (!val || val === '' || val === '—') return `<span class="review-val unknown">Not provided</span>`;
+    return `<span class="review-val">${val}</span>`;
+  }
+
+  function row(key, val) {
+    const display = (!val || val === '') ? `<span class="review-val unknown">Not provided</span>` : `<span class="review-val">${val}</span>`;
+    return `<div class="review-row"><span class="review-key">${key}</span>${display}</div>`;
+  }
+
+  el.innerHTML = `
+    <div class="review-group">
+      <h3>Property Basics</h3>
+      ${row('Address', [r.address, r.city, r.state, r.zip].filter(Boolean).join(', '))}
+      ${row('Type', r.prop_type)}
+      ${row('Year built', r.year_built)}
+      ${row('Living area', r.sqft ? r.sqft + ' sq ft' : '')}
+      ${row('Lot size', r.lot_size ? r.lot_size + ' ' + r.lot_unit : '')}
+      ${row('Bed / Bath', [r.bedrooms, (r.baths_full ? r.baths_full + ' full' : ''), (r.baths_half && r.baths_half !== '0' ? r.baths_half + ' half' : '')].filter(Boolean).join(' / '))}
+      ${row('Garage', r.garage + (r.garage_cars ? ' · ' + r.garage_cars + ' car' : ''))}
+      ${row('Pool / spa', r.pool)}
+      ${row('HOA', r.hoa + (r.hoa_dues ? ' · $' + r.hoa_dues + '/mo' : ''))}
+    </div>
+    <div class="review-group">
+      <h3>Occupancy &amp; Financials</h3>
+      ${row('Occupancy', r.occupancy)}
+      ${row('Asking price', r.asking_price ? '$' + Number(r.asking_price).toLocaleString() : '')}
+      ${row('Annual taxes', r.annual_taxes ? '$' + Number(r.annual_taxes).toLocaleString() : '')}
+      ${row('Mello-Roos', r.mello)}
+    </div>
+    <div class="review-group">
+      <h3>Condition</h3>
+      ${row('Roof', [r.roof_age, r.roof_material].filter(Boolean).join(' · '))}
+      ${row('HVAC', [r.hvac_type, r.hvac_age].filter(Boolean).join(' · '))}
+      ${row('Water heater', [r.wh_type, r.wh_age].filter(Boolean).join(' · '))}
+      ${row('Unpermitted work', r.unpermitted)}
+      ${row('Open permits', r.open_permits)}
+      ${row('Liens / encumbrances', r.liens)}
+    </div>
+    <div class="review-group">
+      <h3>Photos &amp; Media</h3>
+      ${row('Photos', r.photos)}
+      ${row('Drone / aerial', r.drone)}
+      ${row('Virtual tour', r.vtour)}
+      ${row('Floor plan', r.floorplan)}
+    </div>
+    <div class="review-group">
+      <h3>Showing Availability</h3>
+      ${row('Available days', r.showing_days)}
+      ${row('Hours', r.showing_start && r.showing_end ? r.showing_start + ' – ' + r.showing_end : '')}
+      ${row('Advance notice', r.notice)}
+      ${row('Contact phone', r.showing_phone)}
+      ${row('Contact preference', r.contact_pref)}
+      ${row('Access', r.home_during)}
+      ${row('Open house', r.open_house)}
+    </div>`;
+}
+
+function collectFormData() {
+  const get = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  const radio = name => { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : ''; };
+  const checkboxes = name => Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(e => e.value).join(', ');
+
+  return {
+    address: get('address'), city: get('city'), state: get('state'), zip: get('zip'),
+    prop_type: radio('prop_type'),
+    year_built: get('year-built'), sqft: get('sqft'),
+    lot_size: get('lot-size'), lot_unit: get('lot-unit'),
+    stories: get('stories'),
+    bedrooms: get('bedrooms'), baths_full: get('baths-full'), baths_half: get('baths-half'),
+    garage: radio('garage'), garage_cars: radio('garage_cars'),
+    pool: radio('pool'), hoa: radio('hoa'),
+    hoa_name: get('hoa-name'), hoa_dues: get('hoa-dues'), hoa_assessments: get('hoa-assessments'),
+    occupancy: radio('occupancy'),
+    lease_exp: get('lease-exp'), monthly_rent: get('monthly-rent'),
+    asking_price: get('asking-price'), annual_taxes: get('annual-taxes'),
+    mello: radio('mello'),
+    roof_age: get('roof-age'), roof_material: get('roof-material'), roof_issues: get('roof-issues'),
+    hvac_type: get('hvac-type'), hvac_age: get('hvac-age'),
+    wh_type: get('wh-type'), wh_age: get('wh-age'),
+    unpermitted: radio('unpermitted'), unpermitted_desc: get('unpermitted-desc'),
+    open_permits: radio('open_permits'), liens: radio('liens'),
+    insurance: radio('insurance'), pest: radio('pest'),
+    deferred_maint: get('deferred-maint'),
+    unique_features: get('unique-features'), rare_features: get('rare-features'),
+    lot_features: get('lot-features'), disclosures: radio('disclosures'),
+    photos: radio('photos'), photo_count: get('photo-count'), photo_date: get('photo-date'),
+    drone: radio('drone'), vtour: radio('vtour'), floorplan: radio('floorplan'), scan3d: radio('scan3d'),
+    target_close: get('target-close'), offers: radio('offers'),
+    owner_finance: radio('owner_finance'),
+    items_included: get('items-included'), items_excluded: get('items-excluded'),
+    showing_days: checkboxes('showing_days'),
+    showing_start: get('showing-start'), showing_end: get('showing-end'),
+    notice: radio('notice'), blackout_times: get('blackout-times'),
+    home_during: radio('home_during'), lockbox: radio('lockbox'),
+    gate: radio('gate'), pets: radio('pets'),
+    parking: get('parking-instructions'), access_notes: get('access-notes'),
+    showing_phone: get('showing-phone'), contact_pref: radio('contact_pref'),
+    backup_name: get('backup-name'), backup_phone: get('backup-phone'),
+    open_house: radio('open_house'),
+    oh_day: radio('oh_day'), oh_time: radio('oh_time'),
+    blackout_dates: get('blackout-dates'),
+  };
+}
+
+// ── Submit ────────────────────────────────────────────────────────
+function submitIntake() {
+  const data = collectFormData();
+  // In a real implementation, POST to API here
+  console.log('Intake submitted:', data);
+
+  document.getElementById('step-8').style.display = 'none';
+  document.getElementById('step-success').style.display = 'block';
+  document.getElementById('progress-title').textContent = 'Submitted';
+  document.getElementById('progress-count').textContent = 'Complete';
+  document.getElementById('progress-bar').style.width = '100%';
+  document.getElementById('step-labels').innerHTML = '<span class="step-dot done" style="background:var(--green-light);color:var(--green)">✓ Intake complete</span>';
+  document.getElementById('intake-card').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+init();
+</script>
+</body>
+</html>

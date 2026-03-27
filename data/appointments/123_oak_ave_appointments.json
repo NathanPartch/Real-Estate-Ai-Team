@@ -1,0 +1,77 @@
+[
+  {
+    "appointment_id": "APT-123_OAK-001",
+    "property_id": "123_oak_ave",
+    "type": "listing_photography",
+    "party": {
+      "role": "photographer",
+      "name": null,
+      "company": "seller-arranged",
+      "phone": null,
+      "email": null,
+      "confirmed": true
+    },
+    "scheduled_by": "seller",
+    "scheduled_for": "2026-03-20",
+    "duration_hours": 2.5,
+    "location": "123 Oak Avenue, Orange CA 92868",
+    "status": "COMPLETED",
+    "notes": "28 photos delivered. Professional shoot. No drone or virtual tour.",
+    "requires_seller_presence": true,
+    "requires_buyer_presence": false,
+    "requires_tenant_notice": false,
+    "tenant_notice_days_required": null,
+    "created_at": "2026-03-27T12:00:00Z",
+    "last_updated": "2026-03-27T12:00:00Z"
+  },
+  {
+    "appointment_id": "APT-123_OAK-002",
+    "property_id": "123_oak_ave",
+    "type": "open_house",
+    "party": {
+      "role": "seller",
+      "name": null,
+      "company": null,
+      "phone": "(714) 555-0192",
+      "email": null,
+      "confirmed": false
+    },
+    "scheduled_by": "listing-agent",
+    "scheduled_for": null,
+    "duration_hours": 3,
+    "location": "123 Oak Avenue, Orange CA 92868",
+    "status": "PENDING_SCHEDULING",
+    "notes": "Seller willing. Saturday preferred, 1:00 PM – 4:00 PM. Schedule after listing goes live. Blackout: April 12–15.",
+    "requires_seller_presence": true,
+    "requires_buyer_presence": false,
+    "requires_tenant_notice": false,
+    "tenant_notice_days_required": null,
+    "created_at": "2026-03-27T12:00:00Z",
+    "last_updated": "2026-03-27T12:00:00Z"
+  },
+  {
+    "appointment_id": "APT-123_OAK-003",
+    "property_id": "123_oak_ave",
+    "type": "seller_disclosure_review",
+    "party": {
+      "role": "seller",
+      "name": null,
+      "company": null,
+      "phone": "(714) 555-0192",
+      "email": null,
+      "confirmed": false
+    },
+    "scheduled_by": "listing-agent",
+    "scheduled_for": "2026-03-30",
+    "duration_hours": 1,
+    "location": "remote or at property",
+    "status": "PENDING_SCHEDULING",
+    "notes": "TDS in progress. Seller estimates ready by 2026-03-30. Do not activate listing until this is COMPLETED.",
+    "requires_seller_presence": true,
+    "requires_buyer_presence": false,
+    "requires_tenant_notice": false,
+    "tenant_notice_days_required": null,
+    "created_at": "2026-03-27T12:00:00Z",
+    "last_updated": "2026-03-27T12:00:00Z"
+  }
+]

@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Listing Is Ready — Publishing & Marketing Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1814;--paper:#f7f4ef;--warm:#f0ebe2;
+  --accent:#c8602a;--accent-light:#f5e8df;
+  --muted:#8c8880;--border:#ddd8d0;
+  --green:#2a6b4a;--green-light:#e8f2ec;
+  --blue:#1a3a6b;--blue-light:#e8edf8;
+  --gold:#b8860b;--gold-light:#fdf6e3;
+  --red:#8b2020;--red-light:#fdf0f0;
+  --radius:12px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;padding-bottom:4rem}
+
+/* HEADER */
+.guide-header{background:var(--ink);color:var(--paper);padding:2.5rem 2rem;text-align:center}
+.guide-header h1{font-family:'DM Serif Display',serif;font-size:clamp(1.75rem,4vw,2.5rem);line-height:1.1;margin-bottom:.5rem}
+.guide-header h1 em{color:var(--accent);font-style:italic}
+.guide-header p{font-size:.95rem;color:rgba(247,244,239,.7);font-weight:300;max-width:520px;margin:0 auto}
+
+/* WRAPPER */
+.guide-wrap{max-width:860px;margin:0 auto;padding:0 1.5rem}
+
+/* SECTION HEADERS */
+.section-intro{padding:2.5rem 0 1rem;border-bottom:1px solid var(--border);margin-bottom:1.75rem}
+.section-intro .sect-label{font-size:.68rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+.section-intro h2{font-family:'DM Serif Display',serif;font-size:1.75rem;line-height:1.15;margin-bottom:.5rem}
+.section-intro p{font-size:.9rem;color:var(--muted);max-width:580px}
+
+/* ALERT BOXES */
+.alert{display:flex;gap:.85rem;padding:1rem 1.1rem;border-radius:10px;margin-bottom:1.25rem;font-size:.875rem;line-height:1.6;align-items:flex-start}
+.alert-icon{font-size:1.1rem;flex-shrink:0;margin-top:.05rem}
+.alert.tip{background:var(--blue-light);border:1px solid #c0cfe8;color:var(--blue)}
+.alert.warn{background:var(--gold-light);border:1px solid #e8d4a0;color:#6b5000}
+.alert.good{background:var(--green-light);border:1px solid #b7d9c5;color:var(--green)}
+.alert.note{background:var(--warm);border:1px solid var(--border);color:var(--ink)}
+
+/* PATH CARDS */
+.paths{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:2rem}
+@media(max-width:660px){.paths{grid-template-columns:1fr}}
+.path-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.path-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.path-card.free::before{background:var(--green)}
+.path-card.mls::before{background:var(--blue)}
+.path-card.paid::before{background:var(--accent)}
+.path-card h3{font-size:.95rem;font-weight:500;margin-bottom:.35rem}
+.path-card .cost{font-size:.78rem;font-weight:500;padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:.6rem}
+.free .cost{background:var(--green-light);color:var(--green)}
+.mls .cost{background:var(--blue-light);color:var(--blue)}
+.paid .cost{background:var(--accent-light);color:var(--accent)}
+.path-card p{font-size:.83rem;color:var(--muted);line-height:1.55}
+.path-card .reach{font-size:.75rem;font-weight:500;margin-top:.65rem;color:var(--ink)}
+
+/* STEP BLOCKS */
+.steps{display:flex;flex-direction:column;gap:.85rem;margin-bottom:2rem}
+.step{display:flex;gap:1rem;background:white;border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.25rem;align-items:flex-start}
+.step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:500;flex-shrink:0;margin-top:.1rem}
+.step-num.accent{background:var(--accent);color:white}
+.step-num.blue{background:var(--blue);color:white}
+.step-num.green{background:var(--green);color:white}
+.step-num.gold{background:var(--gold);color:white}
+.step-body{}
+.step-body h4{font-size:.9rem;font-weight:500;margin-bottom:.25rem}
+.step-body p{font-size:.855rem;color:var(--muted);line-height:1.6}
+.step-body a{color:var(--accent);text-decoration:none;font-weight:500}
+.step-body a:hover{text-decoration:underline}
+.step-body .sub-steps{margin-top:.5rem;padding-left:1rem;border-left:2px solid var(--border)}
+.step-body .sub-steps li{font-size:.83rem;color:var(--muted);margin-bottom:.2rem;list-style:none;padding-left:.5rem}
+.step-body .sub-steps li::before{content:'→ ';color:var(--accent);font-weight:500}
+
+/* MARKETING GRID */
+.mkt-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem}
+@media(max-width:600px){.mkt-grid{grid-template-columns:1fr}}
+.mkt-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;position:relative}
+.mkt-card .badge{position:absolute;top:1rem;right:1rem;font-size:.65rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:20px}
+.badge.high{background:var(--green-light);color:var(--green)}
+.badge.medium{background:var(--gold-light);color:var(--gold)}
+.badge.low{background:var(--warm);color:var(--muted)}
+.mkt-card h4{font-size:.9rem;font-weight:500;margin-bottom:.2rem;padding-right:3.5rem}
+.mkt-card .cost-range{font-size:.78rem;color:var(--muted);margin-bottom:.5rem}
+.mkt-card p{font-size:.83rem;color:var(--muted);line-height:1.55}
+.mkt-card .why{font-size:.8rem;font-weight:500;color:var(--ink);margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border)}
+
+/* CHECKLIST */
+.checklist{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:2rem}
+.checklist h4{font-size:.9rem;font-weight:500;margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.checklist ul{list-style:none}
+.checklist li{display:flex;align-items:flex-start;gap:.6rem;padding:.35rem 0;font-size:.855rem;border-bottom:1px solid var(--border)}
+.checklist li:last-child{border:none}
+.ck{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);background:var(--warm);flex-shrink:0;margin-top:.05rem;cursor:pointer;transition:all .15s}
+.ck.checked{background:var(--green);border-color:var(--green)}
+.ck.checked::after{content:'✓';color:white;font-size:.7rem;display:flex;align-items:center;justify-content:center;height:100%}
+.li-text{flex:1;line-height:1.5}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:2.5rem 0}
+
+/* COST TABLE */
+.cost-table{width:100%;border-collapse:collapse;font-size:.855rem;margin-bottom:2rem}
+.cost-table th{text-align:left;padding:.65rem 1rem;font-size:.7rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);background:var(--warm)}
+.cost-table td{padding:.75rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}
+.cost-table tr:last-child td{border:none}
+.cost-table .free-tag{color:var(--green);font-weight:500}
+.cost-table .range{color:var(--ink);font-weight:500}
+
+
+/* PATH INTERACTIVE */
+.path-card{cursor:pointer}
+.path-card:hover{border-color:transparent;box-shadow:0 4px 20px rgba(26,24,20,.12);transform:translateY(-2px)}
+.path-card.selected{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-light)}
+.path-card.mls.selected{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-light)}
+.path-card.paid.selected{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-light)}
+.path-section{display:none}
+.path-section.visible{display:block}
+.back-link{display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--muted);text-decoration:none;cursor:pointer;margin-bottom:1.5rem;border:none;background:none;font-family:inherit;padding:0}
+.back-link:hover{color:var(--ink)}
+
+
+/* CHECKLIST HEADER BUTTON */
+.checklist-btn{display:inline-flex;align-items:center;gap:.5rem;background:white;border:1.5px solid var(--border);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:500;padding:7px 14px;border-radius:20px;cursor:pointer;transition:all .2s;text-decoration:none;letter-spacing:.01em;white-space:nowrap;flex-shrink:0}
+.checklist-btn:hover{border-color:var(--accent);color:var(--accent)}
+.checklist-btn svg{width:13px;height:13px;flex-shrink:0;opacity:.7}
+
+/* FOOTER NOTE */
+.guide-footer{background:var(--ink);color:rgba(247,244,239,.6);padding:2rem;text-align:center;font-size:.8rem;margin-top:3rem}
+.guide-footer strong{color:var(--paper)}
+</style>
+</head>
+<body>
+
+<div class="guide-header">
+  <h1>Your listing is ready.<br><em>Now let's get it seen.</em></h1>
+  <p>Step-by-step instructions for every publishing path — free, MLS, and paid marketing. Follow the path that fits your situation.</p>
+</div>
+
+<div class="guide-wrap">
+
+  <!-- CHOOSE YOUR PATH -->
+  <div class="section-intro" style="display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+    <div>
+      <div class="sect-label">Step 1</div>
+      <h2>Choose your publishing path</h2>
+      <p>Select a path to see the step-by-step instructions. You can do more than one.</p>
+    </div>
+    <a class="checklist-btn" href="#launch-checklist" onclick="document.getElementById('launch-checklist').scrollIntoView({behavior:'smooth'});return false;">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8l2 2 4-4"/></svg>
+      Before you go live
+    </a>
+  </div>
+
+  <div class="paths" id="path-chooser">
+    <div class="path-card free" onclick="showPath('path-a', this)">
+      <span class="cost">Free</span>
+      <h3>Zillow FSBO Only</h3>
+      <p>Post directly on Zillow as "For Sale By Owner." Takes about 20 minutes.</p>
+    </div>
+    <div class="path-card mls" onclick="showPath('path-b', this)">
+      <span class="cost">$500 flat fee</span>
+      <h3>MLS Listing</h3>
+      <p>A licensed broker lists you on the MLS. Zillow, Redfin, and 500+ sites pick it up automatically.</p>
+    </div>
+    <div class="path-card paid" onclick="showPath('path-c', this)">
+      <span class="cost">Free + optional paid</span>
+      <h3>Additional Marketing</h3>
+      <p>Social media, direct mail, paid ads, and professional photography to maximize reach.</p>
+    </div>
+  </div>
+
+  <div class="path-section" id="path-a">
+  <button class="back-link" onclick="hidePath('path-a')">← Back to all paths</button>
+  <!-- PATH A: ZILLOW FSBO -->
+  <div class="section-intro">
+    <div class="sect-label">Path A — Free</div>
+    <h2>List on Zillow as FSBO</h2>
+    <p>Takes about 20 minutes. Your listing appears on Zillow and Trulia. Active for 90 days (free to renew).</p>
+  </div>
+
+  <div class="alert warn">
+    <span class="alert-icon">⚠️</span>
+    <div>Zillow FSBO listings are NOT on the MLS. Buyers working with agents may never see your home unless you also do a flat fee MLS listing. Consider Path B alongside this one.</div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num accent">1</div>
+      <div class="step-body">
+        <h4>Create a Zillow account</h4>
+        <p>Go to <a href="https://www.zillow.com" target="_blank">zillow.com</a> and click <strong>Sign In → New Account</strong> in the top right. You can sign up with Google, Facebook, Apple, or email. Use the email address you want buyers to contact you at.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num accent">2</div>
+      <div class="step-body">
+        <h4>Find and claim your home</h4>
+        <p>Type your address in the search bar. On your home's Zestimate page, click <strong>More → Claim ownership</strong>. Zillow will verify you own it — this takes up to 72 hours. You'll get an email when it's confirmed.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num accent">3</div>
+      <div class="step-body">
+        <h4>Go to your Owner Dashboard and start the listing</h4>
+        <p>Once claimed, click your profile icon → <strong>My Zillow → My Homes</strong>. Find your property and click <strong>List Home for Sale By Owner</strong>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num accent">4</div>
+      <div class="step-body">
+        <h4>Set your price</h4>
+        <p>Enter your asking price. Zillow will show you the Zestimate for reference — you don't have to match it, but be ready to explain the difference to buyers. Your listing agent's market analysis has your recommended range.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num accent">5</div>
+      <div class="step-body">
+        <h4>Upload your photos</h4>
+        <p>Upload at minimum 15–25 photos. Lead with the front exterior, then kitchen, living room, primary bedroom, bathrooms, backyard. Zillow sorts by first photo — make it your best. Photos must be horizontal (landscape orientation), well-lit, and clutter-free.</p>
+        <ul class="sub-steps">
+          <li>Minimum recommended: 15 photos</li>
+          <li>Ideal: 25–40 photos including all rooms, exterior, and street view</li>
+          <li>File size: under 10MB each, JPEG or PNG</li>
+          <li>If you used AI to edit or virtually stage any photo: California law (effective Jan 2026) requires you to disclose this and keep the original unedited version</li>
+        </ul>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num accent">6</div>
+      <div class="step-body">
+        <h4>Fill in your home facts</h4>
+        <p>Enter all details accurately. Zillow will pre-fill some from public records — review every field and correct anything wrong. Fields to complete:</p>
+        <ul class="sub-steps">
+          <li>Bedrooms, bathrooms (full and half separately)</li>
+          <li>Square footage (living area)</li>
+          <li>Lot size</li>
+          <li>Year built</li>
+          <li>Garage type and capacity</li>
+          <li>HOA: yes/no, monthly amount</li>
+          <li>Parking, laundry, heating/cooling type</li>
+        </ul>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num accent">7</div>
+      <div class="step-body">
+        <h4>Paste in your listing description</h4>
+        <p>Use the description your listing agent prepared. This goes in the <strong>Home Description</strong> field. Keep it under 700 characters for the MLS-facing fields, but Zillow allows longer — paste the full marketing description here.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num accent">8</div>
+      <div class="step-body">
+        <h4>Add your contact information</h4>
+        <p>Enter the phone number and email you want buyers to call/text/email directly. This is visible to the public — use a number you're comfortable sharing. Consider a Google Voice number if you prefer privacy.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num accent">9</div>
+      <div class="step-body">
+        <h4>Agree to terms and submit</h4>
+        <p>Check the Terms of Use box and click <strong>Post for Sale by Owner</strong>. Your listing will go live within a few hours. You'll receive a confirmation email with a link to your live listing.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num accent">10</div>
+      <div class="step-body">
+        <h4>Renew every 90 days</h4>
+        <p>Zillow FSBO listings expire after 90 days. You'll get an email reminder before it expires. Log in and click <strong>Extend Listing</strong> — it's free and takes 30 seconds. Do this every 90 days until sold.</p>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end path-a -->
+
+  <div class="path-section" id="path-b">
+  <button class="back-link" onclick="hidePath('path-b')">← Back to all paths</button>
+  <!-- PATH B: MLS LISTING -->
+  <div class="section-intro">
+    <div class="sect-label">Path B — MLS Listing</div>
+    <h2>Get your home on the MLS</h2>
+    <p>The MLS (Multiple Listing Service) is the database every real estate agent uses to find homes for their buyers. Getting listed here is the single most important thing you can do to maximize exposure. Here is exactly how it works and what it costs.</p>
+  </div>
+
+  <div class="alert note">
+    <span class="alert-icon">ℹ️</span>
+    <div><strong>What the MLS is, in plain terms:</strong> Think of it as the master database of every home for sale in your area. When a buyer hires an agent, that agent searches the MLS — not Zillow — to find options. If your home isn't on the MLS, those buyers will never see it. Once you're on the MLS, Zillow, Realtor.com, Redfin, and Trulia automatically pull your listing and display it. You don't have to post on those sites separately.</div>
+  </div>
+
+  <!-- COST BOX -->
+  <div style="background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;display:flex;gap:1.5rem;align-items:flex-start;flex-wrap:wrap">
+    <div style="flex:1;min-width:180px">
+      <div style="font-size:.68rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem">Our flat rate</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:2.5rem;line-height:1;color:var(--ink)">$500</div>
+      <div style="font-size:.83rem;color:var(--muted);margin-top:.3rem">one-time fee — no listing commission</div>
+    </div>
+    <div style="flex:2;min-width:220px;border-left:1px solid var(--border);padding-left:1.5rem">
+      <div style="font-size:.855rem;color:var(--muted);line-height:1.7;margin-bottom:.85rem">Your AI listing agent bundles everything — photos, property data, description, and your commission decision — and sends it to us in one click. We take it from there. No forms to fill out, no platforms to navigate yourself.</div>
+      <div style="font-size:.75rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem">We list you on all of these:</div>
+      <div style="display:flex;flex-wrap:wrap;gap:.4rem">
+        <span style="display:inline-flex;align-items:center;gap:.35rem;background:var(--warm);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:500"><span style="width:10px;height:10px;border-radius:50%;background:var(--blue);display:inline-block"></span>Local MLS</span>
+        <span style="display:inline-flex;align-items:center;gap:.35rem;background:var(--warm);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:500"><span style="width:10px;height:10px;border-radius:50%;background:#006aff;display:inline-block"></span>Zillow</span>
+        <span style="display:inline-flex;align-items:center;gap:.35rem;background:var(--warm);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:500"><span style="width:10px;height:10px;border-radius:50%;background:#d92228;display:inline-block"></span>Realtor.com</span>
+        <span style="display:inline-flex;align-items:center;gap:.35rem;background:var(--warm);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:500"><span style="width:10px;height:10px;border-radius:50%;background:#cc0000;display:inline-block"></span>Redfin</span>
+        <span style="display:inline-flex;align-items:center;gap:.35rem;background:var(--warm);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:500"><span style="width:10px;height:10px;border-radius:50%;background:#5eab1f;display:inline-block"></span>Trulia</span>
+      </div>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:.6rem">All sites go live automatically from one MLS submission — you don't post on each platform separately.</div>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num blue">1</div>
+      <div class="step-body">
+        <h4>One click — we handle everything from there</h4>
+        <p>At the end of your listing agent conversation, click <strong>"Submit to MLS — $500."</strong> Your agent bundles every field, photo, and detail into a complete package and sends it directly to our brokerage. You don't touch any platform yourself.</p>
+        <ul class="sub-steps" style="margin-top:.75rem">
+          <li>We enter your listing into the MLS under our licensed brokerage within 24 hours</li>
+          <li>Zillow, Realtor.com, Redfin, and Trulia automatically pull from the MLS — no separate posting needed</li>
+          <li>All five platforms go live from a single MLS submission</li>
+          <li>You'll receive confirmation links for each platform once live</li>
+        </ul>
+        <p style="margin-top:.65rem;font-size:.83rem;color:var(--muted)">Decide your buyer's agent commission in Step 2 first — that gets included in what we submit.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num blue">2</div>
+      <div class="step-body">
+        <h4>Decide what you'll offer a buyer's agent — before we list</h4>
+        <p>This is one of the most important decisions you'll make before going live. Here's what it means and why it matters:</p>
+        <div style="background:var(--warm);border-radius:10px;padding:1rem 1.1rem;margin-top:.75rem;font-size:.855rem;line-height:1.7;color:var(--ink)">
+          <strong>What a buyer's agent commission is:</strong> When a buyer uses a real estate agent to help them purchase a home, that agent expects to be paid a commission — typically a percentage of the sale price. As the seller, you can choose to offer to cover this fee, or not. This choice directly affects how many agents are willing to bring their buyers to see your home.
+        </div>
+        <div style="margin-top:1rem;display:flex;flex-direction:column;gap:.6rem">
+          <div style="background:var(--green-light);border:1px solid #b7d9c5;border-radius:10px;padding:.9rem 1rem;font-size:.855rem;line-height:1.6">
+            <strong style="color:var(--green)">Offer 2%–2.5% → Most showings</strong><br>
+            <span style="color:#3a5a48">This is the most common offer. Agents actively search for homes that offer a buyer's commission, so your listing will appear in more agent searches. More agents showing your home = more offers = more competition = better final price. The fee comes out of your sale proceeds at closing — you don't pay it upfront.</span>
+          </div>
+          <div style="background:var(--gold-light);border:1px solid #e8d4a0;border-radius:10px;padding:.9rem 1rem;font-size:.855rem;line-height:1.6">
+            <strong style="color:var(--gold)">Offer 1%–1.5% → Fewer agent showings, more savings</strong><br>
+            <span style="color:#5a4a00">Some agents will still show your home. You'll save more at closing but may see less agent-driven interest. Works better if your home is priced well below market or if the market is very hot.</span>
+          </div>
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;font-size:.855rem;line-height:1.6">
+            <strong style="color:var(--ink)">Offer 0% → Direct buyers only</strong><br>
+            <span style="color:var(--muted)">See Step 3 — this is worth understanding before deciding. Direct buyers (no agent) can still purchase your home and do not require any commission from you.</span>
+          </div>
+        </div>
+        <p style="margin-top:.75rem;font-size:.83rem;color:var(--muted)"><strong>Our recommendation for first-time sellers:</strong> Start at 2%–2.5%. You can always negotiate down during an offer — but you can't attract showings you never got.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num blue">3</div>
+      <div class="step-body">
+        <h4>If an agent approaches you directly — know this</h4>
+        <p>Sometimes a buyer's agent will contact you directly about your listing — by phone, email, or at an open house. This is normal. Here is what to expect and how to handle it:</p>
+        <div style="background:var(--warm);border-radius:10px;padding:1rem 1.1rem;margin-top:.75rem;font-size:.855rem;line-height:1.7">
+          <strong>What they'll ask about:</strong> The agent will likely ask whether you're offering a buyer's agent commission and how much. This is a standard question — they need to know how their client (the buyer) will cover their fee.
+        </div>
+        <ul class="sub-steps" style="margin-top:.75rem">
+          <li><strong>If you listed a commission on the MLS:</strong> Tell them the amount you listed. For example: "We're offering 2.5% to the buyer's agent, as stated in the MLS." That's all you need to say.</li>
+          <li><strong>If they ask for more than you listed:</strong> You don't have to agree. The amount you set is your offer. You can say "Our offer is 2.5% — that's what we're working with." Negotiating commission is normal, but so is holding your position.</li>
+          <li><strong>If you listed 0% and an agent calls:</strong> Be upfront: "We're not offering a buyer's agent commission. The buyer would need to cover your fee separately." Some agents will proceed — especially if their buyer really wants your property. Some won't.</li>
+          <li><strong>Never verbally agree to a commission you haven't put in writing.</strong> Any commission agreement should be in the purchase contract — not a phone conversation.</li>
+        </ul>
+        <div style="background:var(--blue-light);border:1px solid #c0cfe8;border-radius:10px;padding:.85rem 1rem;margin-top:.75rem;font-size:.84rem;color:var(--blue);line-height:1.6">
+          <strong>Tip:</strong> Before your listing goes live, decide on a number you're comfortable with and write it down. When an agent calls, you'll have a clear, confident answer ready instead of being caught off guard.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num blue">4</div>
+      <div class="step-body">
+        <h4>Direct buyers — no commission required</h4>
+        <p>A direct buyer is someone who finds your home and contacts you without using a real estate agent. They may find you through Zillow, Facebook, a yard sign, or word of mouth.</p>
+        <div style="background:var(--green-light);border:1px solid #b7d9c5;border-radius:10px;padding:1rem 1.1rem;margin-top:.75rem;font-size:.855rem;line-height:1.7;color:#2a4a38">
+          <strong>Direct buyers do not require any commission from you.</strong> There is no agent involved, so there is no agent to pay. This is one of the biggest financial advantages of selling FSBO — if a buyer comes directly to you, you keep that percentage in your pocket.
+        </div>
+        <ul class="sub-steps" style="margin-top:.75rem">
+          <li>Direct buyers have full access to your listing — they can see everything on Zillow, Realtor.com, and Redfin, and can contact you directly using the number on your listing.</li>
+          <li>You negotiate the price and terms directly with them, without a commission middleman.</li>
+          <li>They may still hire a real estate attorney to review the contract — that's their cost, not yours.</li>
+          <li>You should still use a title company or escrow officer to handle the closing paperwork safely. That fee (typically 0.5%–1% of the sale price, split between buyer and seller) applies to all transactions regardless of how the buyer found you.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num blue">5</div>
+      <div class="step-body">
+        <h4>Sign the listing agreement — we handle the rest</h4>
+        <p>Once we receive your listing package and your commission decision, we'll send you a short limited-service listing agreement to sign electronically. This document:</p>
+        <ul class="sub-steps">
+          <li>Authorizes us to submit your listing to the MLS on your behalf</li>
+          <li>Covers all five platforms — MLS, Zillow, Realtor.com, Redfin, and Trulia — from one submission</li>
+          <li>Confirms you remain in control of showings, negotiations, and offers</li>
+          <li>States your flat $500 fee — no percentage, no hidden costs at listing</li>
+          <li>Does not give us the right to represent you or negotiate for you</li>
+        </ul>
+        <p style="margin-top:.6rem;font-size:.855rem;color:var(--muted)">We enter your listing within 24 hours of receiving your signed agreement and full package. You'll receive a confirmation email with your live MLS listing link once it's active.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num blue">6</div>
+      <div class="step-body">
+        <h4>Where inquiries go — and what you can control</h4>
+        <p>This is one of the most important things to understand before your listing goes live. Each platform handles buyer inquiries differently, and none of them send everything directly to you by default. Here's exactly what happens on each one:</p>
+
+        <div style="display:flex;flex-direction:column;gap:.6rem;margin-top:.85rem">
+
+          <div style="background:var(--green-light);border:1px solid #b7d9c5;border-radius:10px;padding:.9rem 1rem;font-size:.845rem;line-height:1.65">
+            <strong style="color:var(--green)">MLS → goes to our brokerage, forwarded to you</strong><br>
+            <span style="color:#2a4a38">Inquiries that come through the MLS listing go to us as the listing broker. We forward every one to you immediately by email and text. This is reliable and fast.</span>
+          </div>
+
+          <div style="background:var(--green-light);border:1px solid #b7d9c5;border-radius:10px;padding:.9rem 1rem;font-size:.845rem;line-height:1.65">
+            <strong style="color:var(--green)">Zillow &amp; Trulia → goes to you directly (as listing broker)</strong><br>
+            <span style="color:#2a4a38">Because we submit your listing through a licensed brokerage, our contact information appears on Zillow as the listing agent. We forward every Zillow inquiry to you the same day. Direct buyers who find the listing can also contact us directly, and we pass them to you immediately.</span>
+          </div>
+
+          <div style="background:var(--gold-light);border:1px solid #e8d4a0;border-radius:10px;padding:.9rem 1rem;font-size:.845rem;line-height:1.65">
+            <strong style="color:var(--gold)">Realtor.com → partially</strong><br>
+            <span style="color:#5a4a00">Realtor.com often routes inquiries to agents who pay for lead placement in your zip code — not the listing agent. We receive some inquiries and forward them, but Realtor.com may also send the same lead to other agents. You won't always get every Realtor.com contact. This is a platform limitation we can't change.</span>
+          </div>
+
+          <div style="background:var(--red-light);border:1px solid #f0c0c0;border-radius:10px;padding:.9rem 1rem;font-size:.845rem;line-height:1.65">
+            <strong style="color:var(--red)">Redfin → does not forward to sellers or outside brokers</strong><br>
+            <span style="color:#5a1a1a">Redfin is its own brokerage. When a buyer clicks "Contact Agent" on Redfin, the inquiry goes to a Redfin agent — not to us and not to you. There is no way to change this. Redfin's value is in the exposure it creates, not the direct leads. Buyers who are serious will still find your contact info on Zillow or call the number on your yard sign.</span>
+          </div>
+
+        </div>
+
+        <div style="background:var(--blue-light);border:1px solid #c0cfe8;border-radius:10px;padding:.9rem 1rem;margin-top:.75rem;font-size:.845rem;line-height:1.65;color:var(--blue)">
+          <strong>The most reliable path to your inbox:</strong> Make sure your phone number is on your yard sign and clearly visible in your Zillow listing description. Most serious buyers — both agent-represented and direct — will call or text the number they can find. That goes straight to you, no platform routing involved.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end path-b -->
+
+  <div class="path-section" id="path-c">
+  <button class="back-link" onclick="hidePath('path-c')">← Back to all paths</button>
+  <!-- FREE MARKETING -->
+  <div class="section-intro">
+    <div class="sect-label">Path C — Free</div>
+    <h2>Free marketing — do these regardless</h2>
+    <p>These cost nothing and move the needle. Do all of them after your listing is live.</p>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num green">1</div>
+      <div class="step-body">
+        <h4>Post on Facebook Marketplace</h4>
+        <p>Go to <a href="https://www.facebook.com/marketplace" target="_blank">facebook.com/marketplace</a> → click <strong>Sell → Homes for Sale or Rent</strong>. Add your photos, price, description, and contact info. This is the #1 free channel for direct buyer inquiries. Facebook Marketplace listings are also indexed by Google.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num green">2</div>
+      <div class="step-body">
+        <h4>Post in local Facebook groups</h4>
+        <p>Search Facebook for "[Your City] Real Estate" or "[Your Neighborhood] Community" groups. Join and post your listing with 3–5 photos and a short description. These groups often have thousands of local members actively looking.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num green">3</div>
+      <div class="step-body">
+        <h4>Share on Instagram and Nextdoor</h4>
+        <p>Post 5–8 of your best photos with your price and address. On Instagram, add location tags and hashtags: <em>#[YourCity]RealEstate #HomesForSale #[Neighborhood] #FSBO</em>. On Nextdoor, post in your neighborhood — neighbors often know someone looking to move nearby.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num green">4</div>
+      <div class="step-body">
+        <h4>Post on Craigslist</h4>
+        <p>Go to <a href="https://craigslist.org" target="_blank">craigslist.org</a> → your city → Real Estate for Sale → Post. Free. Reaches investors and buyers who prefer off-MLS deals. Refresh every 48 hours to stay at the top of results.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num green">5</div>
+      <div class="step-body">
+        <h4>Put up a yard sign with a QR code</h4>
+        <p>A visible yard sign is still one of the most effective local tools — especially for capturing drive-by interest. Include your phone number and a QR code linking to your Zillow listing. You can order a professional FSBO sign from Amazon, Home Depot, or local print shops for $20–60.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num green">6</div>
+      <div class="step-body">
+        <h4>Tell everyone you know</h4>
+        <p>Text your contacts, post on your personal Facebook/Instagram, email your network. Include price, address, and 2–3 photos. Referrals and word-of-mouth are how a surprising number of FSBO sales close — especially in tight communities.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num green">7</div>
+      <div class="step-body">
+        <h4>Host an open house</h4>
+        <p>Schedule one weekend afternoon (Saturday or Sunday, 12–3pm is standard). Announce it on Zillow (there's an Open House section in your listing), Facebook, and Nextdoor 5–7 days in advance. Have a sign-in sheet — collect every visitor's name, email, and phone for follow-up.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- PAID MARKETING -->
+  <div class="section-intro">
+    <div class="sect-label">Path D — Paid Marketing</div>
+    <h2>Paid marketing that actually works</h2>
+    <p>Ranked by proven ROI for residential listings in 2025–2026. These are the channels that consistently move listings faster and at higher prices.</p>
+  </div>
+
+  <div class="mkt-grid">
+
+    <div class="mkt-card">
+      <span class="badge high">Highest ROI</span>
+      <h4>Professional Photography</h4>
+      <div class="cost-range">$150 – $400</div>
+      <p>Homes with professional photos sell 32% faster and spend an average of 34 fewer days on market. Buyers spend 60% of their time on photos vs. 20% reading descriptions. This is non-negotiable in any market.</p>
+      <div class="why">→ Find a local real estate photographer on Google, Yelp, or ask your listing agent for a referral.</div>
+    </div>
+
+    <div class="mkt-card">
+      <span class="badge high">High ROI</span>
+      <h4>Video Tour / Walkthrough</h4>
+      <div class="cost-range">$200 – $600 (or free with a smartphone)</div>
+      <p>Video listings generate 403% more inquiries than photo-only listings. A simple smartphone walkthrough posted to YouTube and Facebook outperforms static photos for out-of-town buyers. Professional videography is even better.</p>
+      <div class="why">→ Post to YouTube with title "[Address] Home Tour | [Price] | [City] CA". Embed the link in your Zillow listing description.</div>
+    </div>
+
+    <div class="mkt-card">
+      <span class="badge high">High ROI</span>
+      <h4>Facebook & Instagram Ads</h4>
+      <div class="cost-range">$5 – $30/day · $150 – $500 total budget recommended</div>
+      <p>Target buyers by zip code, income, life events (recently married, moving), and home-buying intent. Facebook's real estate targeting is the most precise of any paid platform. Video ads perform best. Run for 2–3 weeks.</p>
+      <div class="why">→ Use Facebook Ads Manager. Set location to 15-mile radius of your property. Objective: Traffic to your Zillow link. Use your best 3–5 photos or a short video clip.</div>
+    </div>
+
+    <div class="mkt-card">
+      <span class="badge high">High ROI</span>
+      <h4>3D Virtual Tour (Matterport)</h4>
+      <div class="cost-range">$200 – $400 (one-time scan)</div>
+      <p>Allows buyers to walk through your home from anywhere. Critical for out-of-state buyers and investors who won't make an offer without seeing a home. Listings with 3D tours get significantly more saves and longer engagement time on Zillow.</p>
+      <div class="why">→ Book a Matterport scan through <a href="https://matterport.com" target="_blank">matterport.com/service-providers</a> or a local real estate photographer who offers it. The scan link embeds directly into Zillow.</div>
+    </div>
+
+    <div class="mkt-card">
+      <span class="badge medium">Medium ROI</span>
+      <h4>Direct Mail to Neighbors</h4>
+      <div class="cost-range">$0.50 – $1.50 per piece · 200–500 homes recommended</div>
+      <p>A postcard to the 200–500 homes nearest yours reaches the most motivated buyers — people who already love the neighborhood and may have friends or family wanting to move nearby. Direct mail outperformed digital in some studies for generating high-quality leads.</p>
+      <div class="why">→ Use <a href="https://wisepelican.com" target="_blank">Wise Pelican</a> or <a href="https://sendoutcards.com" target="_blank">SendOutCards</a>. Design a simple postcard with your best photo, price, and QR code. Mail to a 0.5-mile radius of your address.</div>
+    </div>
+
+    <div class="mkt-card">
+      <span class="badge medium">Medium ROI</span>
+      <h4>Google Search Ads</h4>
+      <div class="cost-range">$10 – $50/day · $300 – $800 total budget</div>
+      <p>Targets people actively searching "[city] homes for sale" or "[zip code] real estate." High purchase intent. Works best when you have a property webpage (not just Zillow) to send traffic to. CPC in real estate averages $10–30+.</p>
+      <div class="why">→ Use Google Ads. Target keywords: "[your zip] homes for sale", "[your city] [beds]bd house for sale". Set location targeting to your metro area. Requires a landing page — use Carrd or Wix to build a simple one-page property site ($10–20/mo).</div>
+    </div>
+
+    <div class="mkt-card">
+      <span class="badge medium">Medium ROI</span>
+      <h4>Zillow Premier Agent Ads</h4>
+      <div class="cost-range">$150 – $500/month</div>
+      <p>Zillow allows sellers to boost listing visibility by purchasing Premier Agent placement. Your listing appears higher in zip code searches. Best for competitive areas where inventory is high and your listing needs more prominence.</p>
+      <div class="why">→ Go to your Zillow listing → click <strong>Boost Your Listing</strong>. Set your zip code and budget. Run for 30 days and evaluate lead quality.</div>
+    </div>
+
+    <div class="mkt-card">
+      <span class="badge medium">Medium ROI</span>
+      <h4>Virtual Staging (AI)</h4>
+      <div class="cost-range">$15 – $50 per photo</div>
+      <p>If rooms are empty or poorly furnished, AI virtual staging adds realistic furniture to photos — dramatically improving buyer perception. Services like REimagineHome or BoxBrownie produce results in minutes. California requires disclosure if used.</p>
+      <div class="why">→ <a href="https://reimaginehome.ai" target="_blank">REimagineHome.ai</a> or <a href="https://boxbrownie.com" target="_blank">BoxBrownie.com</a>. Upload your photo, select a style, download the result. Disclose "virtually staged" on all uses in California.</div>
+    </div>
+
+  </div>
+
+  <!-- COST SUMMARY TABLE -->
+  <div class="section-intro">
+    <div class="sect-label">Budget Summary</div>
+    <h2>What a complete marketing push costs</h2>
+    <p>Mix and match based on your budget and market competitiveness.</p>
+  </div>
+
+  <table class="cost-table">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Cost</th>
+        <th>Priority</th>
+        <th>Where</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Zillow FSBO listing</td>
+        <td class="free-tag">Free</td>
+        <td>Do first</td>
+        <td>zillow.com/for-sale-by-owner</td>
+      </tr>
+      <tr>
+        <td>Facebook Marketplace + Groups</td>
+        <td class="free-tag">Free</td>
+        <td>Do first</td>
+        <td>facebook.com/marketplace</td>
+      </tr>
+      <tr>
+        <td>Nextdoor + Craigslist + Yard sign</td>
+        <td class="free-tag">Free – $60</td>
+        <td>Do first</td>
+        <td>nextdoor.com / craigslist.org</td>
+      </tr>
+      <tr>
+        <td>Flat Fee MLS listing</td>
+        <td class="range">$99 – $400</td>
+        <td>Highest impact</td>
+        <td>Houzeo, Beycome, Brokerless</td>
+      </tr>
+      <tr>
+        <td>Professional photography</td>
+        <td class="range">$150 – $400</td>
+        <td>Do before going live</td>
+        <td>Local real estate photographer</td>
+      </tr>
+      <tr>
+        <td>3D Virtual tour (Matterport)</td>
+        <td class="range">$200 – $400</td>
+        <td>High impact</td>
+        <td>matterport.com/service-providers</td>
+      </tr>
+      <tr>
+        <td>Facebook / Instagram ads</td>
+        <td class="range">$150 – $500 total</td>
+        <td>Run weeks 1–3</td>
+        <td>facebook.com/ads</td>
+      </tr>
+      <tr>
+        <td>Direct mail to neighbors</td>
+        <td class="range">$100 – $400</td>
+        <td>Supplement digital</td>
+        <td>wisepelican.com</td>
+      </tr>
+      <tr>
+        <td>Virtual staging (if needed)</td>
+        <td class="range">$50 – $200</td>
+        <td>If rooms are empty</td>
+        <td>reimaginehome.ai</td>
+      </tr>
+      <tr>
+        <td><strong>Minimum effective launch</strong></td>
+        <td class="range"><strong>$350 – $850</strong></td>
+        <td>Flat fee MLS + photos</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><strong>Full competitive push</strong></td>
+        <td class="range"><strong>$1,200 – $2,500</strong></td>
+        <td>All of the above</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="alert note">
+    <span class="alert-icon">📌</span>
+    <div>Even spending $2,500 on marketing is far less than a traditional listing agent commission on most homes (typically 2.5–3% of sale price). On an $875,000 home, 3% = $26,250. The math strongly favors FSBO + paid marketing for sellers who are willing to put in the work.</div>
+  </div>
+
+  </div><!-- end path-c -->
+
+  <!-- LAUNCH CHECKLIST -->
+  <div class="section-intro" id="launch-checklist">
+    <div class="sect-label">Your Launch Checklist</div>
+    <h2>Before you go live</h2>
+    <p>Check these off in order. Don't list until photos are ready — your first 24–48 hours are the highest-traffic window.</p>
+  </div>
+
+  <div class="checklist">
+    <h4>Pre-listing checklist</h4>
+    <ul>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Professional photos taken and edited</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Listing description finalized and reviewed by you</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">All property facts confirmed accurate (beds, baths, sq ft, HOA, taxes)</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Seller disclosures prepared (Transfer Disclosure Statement, SPQ)</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Asking price set based on market analysis</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Zillow account created and home claimed</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Flat fee MLS service selected and account created</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Buyer's agent commission decision made (0%, 1.5%, or 2.5%)</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Yard sign ordered (allow 3–5 days for delivery)</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Showing availability confirmed (what days/times, how much notice needed)</span></li>
+    </ul>
+  </div>
+
+  <div class="checklist">
+    <h4>Day 1 — Go live</h4>
+    <ul>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Submit listing to flat fee MLS service</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Post on Zillow FSBO (if not using flat fee MLS)</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Post on Facebook Marketplace</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Post in local Facebook groups</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Post on Instagram and Nextdoor</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Post on Craigslist</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Put up yard sign</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Text/email your personal network with listing link</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Launch Facebook/Instagram ad campaign</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Schedule first open house for the coming weekend</span></li>
+    </ul>
+  </div>
+
+  <div class="checklist">
+    <h4>Week 1 — Confirm syndication</h4>
+    <ul>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Confirm listing appears on Zillow</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Confirm listing appears on Realtor.com</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Confirm listing appears on Redfin</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Confirm listing appears on Trulia</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Track Zillow views and saves — report concerns to your listing agent</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Hold first open house and collect all visitor contact info</span></li>
+      <li><span class="ck" onclick="this.classList.toggle('checked')"></span><span class="li-text">Follow up with all inquiries within 24 hours</span></li>
+    </ul>
+  </div>
+
+</div>
+
+<div class="guide-footer">
+  <strong>Prepared by your PropAgent listing team.</strong><br>
+  This guide reflects current platforms and practices as of early 2026. Verify any platform-specific steps directly on the provider's website before proceeding, as interfaces change frequently.
+</div>
+
+
+<script>
+function showPath(id, card) {
+  document.querySelectorAll('.path-section').forEach(s => s.classList.remove('visible'));
+  document.querySelectorAll('.path-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById(id).classList.add('visible');
+  card.classList.add('selected');
+  document.getElementById(id).scrollIntoView({behavior:'smooth', block:'start'});
+}
+function hidePath(id) {
+  document.getElementById(id).classList.remove('visible');
+  document.querySelectorAll('.path-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('path-chooser').scrollIntoView({behavior:'smooth', block:'start'});
+}
+</script>
+
+</body>
+</html>
+
+<!-- VA WORKFLOW SECTION -->
+<div style="background:var(--ink);color:var(--paper);margin-top:3rem">
+<div class="guide-wrap" style="padding-top:2.5rem;padding-bottom:2.5rem">
+
+  <div style="margin-bottom:1.75rem">
+    <div style="font-size:.68rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem">For Brokers</div>
+    <h2 style="font-family:'DM Serif Display',serif;font-size:1.75rem;line-height:1.15;margin-bottom:.5rem;color:var(--paper)">Have a VA do all of this for you</h2>
+    <p style="font-size:.9rem;color:rgba(247,244,239,.6);max-width:580px">If you're a licensed broker, this entire publishing workflow can be handed to a virtual assistant. Here's exactly how to structure it so they can operate independently and you break even on their wage.</p>
+  </div>
+
+  <!-- THE MODEL -->
+  <div style="background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.12);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem">
+    <h4 style="font-size:.9rem;font-weight:500;margin-bottom:.75rem;color:var(--paper)">The break-even model</h4>
+    <p style="font-size:.86rem;color:rgba(247,244,239,.65);line-height:1.7;margin-bottom:.75rem">A trained real estate VA in the Philippines costs <strong style="color:var(--paper)">$7–$12/hr</strong> (full-time ~$1,100–$1,800/mo including benefits). Each MLS listing entry takes an experienced VA <strong style="color:var(--paper)">45–90 minutes</strong> end-to-end. At $200–$400 per listing fee you charge the seller, you cover <strong style="color:var(--paper)">2–4 listing entries per month</strong> before profit starts. At any volume above that, the VA pays for themselves many times over.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem">
+      <div style="background:rgba(247,244,239,.08);border-radius:8px;padding:1rem;text-align:center">
+        <div style="font-size:1.4rem;font-weight:500;color:var(--paper);font-family:'DM Serif Display',serif">$7–12<span style="font-size:.75rem;font-weight:400">/hr</span></div>
+        <div style="font-size:.72rem;color:rgba(247,244,239,.5);margin-top:.2rem">VA hourly rate (Philippines)</div>
+      </div>
+      <div style="background:rgba(247,244,239,.08);border-radius:8px;padding:1rem;text-align:center">
+        <div style="font-size:1.4rem;font-weight:500;color:var(--paper);font-family:'DM Serif Display',serif">60–90<span style="font-size:.75rem;font-weight:400">min</span></div>
+        <div style="font-size:.72rem;color:rgba(247,244,239,.5);margin-top:.2rem">Per listing entry, end-to-end</div>
+      </div>
+      <div style="background:rgba(247,244,239,.08);border-radius:8px;padding:1rem;text-align:center">
+        <div style="font-size:1.4rem;font-weight:500;color:var(--paper);font-family:'DM Serif Display',serif">2–4<span style="font-size:.75rem;font-weight:400">listings</span></div>
+        <div style="font-size:.72rem;color:rgba(247,244,239,.5);margin-top:.2rem">Per month to break even</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT THE SELLER SENDS YOU -->
+  <h3 style="font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--paper);margin-bottom:1rem">Step 1 — What to collect from the seller</h3>
+  <p style="font-size:.86rem;color:rgba(247,244,239,.6);margin-bottom:1rem;line-height:1.6">Build a simple intake form (Google Form or Typeform works fine) that collects everything the VA needs to enter the listing without asking you a single question. Send this link to every seller before anything else happens.</p>
+
+  <div style="background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.12);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;font-size:.855rem;line-height:1.8;color:rgba(247,244,239,.75)">
+    <strong style="color:var(--paper);display:block;margin-bottom:.5rem">Seller intake form — required fields</strong>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.25rem 2rem">
+      <span>□ Full property address</span>
+      <span>□ Asking price</span>
+      <span>□ Property type (SFR/condo/etc.)</span>
+      <span>□ Bedrooms + bathrooms (full/half)</span>
+      <span>□ Square footage — living area</span>
+      <span>□ Lot size (sq ft)</span>
+      <span>□ Year built</span>
+      <span>□ Garage type + capacity</span>
+      <span>□ HOA yes/no + monthly amount + name</span>
+      <span>□ Pool yes/no</span>
+      <span>□ Occupancy status</span>
+      <span>□ Annual property taxes</span>
+      <span>□ Buyer's agent commission offered (%)</span>
+      <span>□ Target close date</span>
+      <span>□ Preferred showing instructions</span>
+      <span>□ Any items included/excluded</span>
+      <span>□ Known defects or disclosures</span>
+      <span>□ Recent improvements (year + description)</span>
+      <span>□ Seller contact: name, phone, email</span>
+      <span>□ Photo upload (min 20, JPEG/PNG, landscape)</span>
+    </div>
+    <p style="margin-top:.75rem;font-size:.8rem;color:rgba(247,244,239,.45)">The AI listing agent in this system generates all of this automatically during the seller intake conversation and exports it in a format the VA can use directly.</p>
+  </div>
+
+  <!-- VA STEP BY STEP -->
+  <h3 style="font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--paper);margin-bottom:1rem;margin-top:1.75rem">Step 2 — VA standard operating procedure (SOP)</h3>
+  <p style="font-size:.86rem;color:rgba(247,244,239,.6);margin-bottom:1rem;line-height:1.6">Give this SOP to every VA you hire. It's the exact sequence they follow for every listing. No guessing, no back-and-forth with you.</p>
+
+  <div style="display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem">
+
+    <div style="display:flex;gap:.9rem;background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.1);border-radius:10px;padding:1rem">
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;flex-shrink:0;margin-top:.1rem">1</div>
+      <div>
+        <div style="font-size:.875rem;font-weight:500;color:var(--paper);margin-bottom:.2rem">Receive the completed seller intake form</div>
+        <div style="font-size:.83rem;color:rgba(247,244,239,.6);line-height:1.6">Check that all required fields are filled. If anything is missing (especially photos or address), email the seller using the template in the shared Google Drive folder before touching the MLS. Do not start a partial entry.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.9rem;background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.1);border-radius:10px;padding:1rem">
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;flex-shrink:0;margin-top:.1rem">2</div>
+      <div>
+        <div style="font-size:.875rem;font-weight:500;color:var(--paper);margin-bottom:.2rem">Download and organize photos</div>
+        <div style="font-size:.83rem;color:rgba(247,244,239,.6);line-height:1.6">Create a folder in Google Drive: <em>[Property Address] — [Date]</em>. Download all seller-provided photos. Rename them in order: 01_exterior_front, 02_living_room, 03_kitchen, etc. Lead photo must be the best exterior shot. Check each photo is landscape orientation, well-lit, and free of clutter. Flag any that need replacement before uploading.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.9rem;background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.1);border-radius:10px;padding:1rem">
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;flex-shrink:0;margin-top:.1rem">3</div>
+      <div>
+        <div style="font-size:.875rem;font-weight:500;color:var(--paper);margin-bottom:.2rem">Log into the MLS with broker credentials</div>
+        <div style="font-size:.83rem;color:rgba(247,244,239,.6);line-height:1.6">Use the shared login in the team password manager (1Password or Bitwarden). Never save credentials in a browser. If you get a two-factor prompt, use the authenticator app on your phone — do not ask the broker to send you the code every time; set this up properly on day one.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.9rem;background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.1);border-radius:10px;padding:1rem">
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;flex-shrink:0;margin-top:.1rem">4</div>
+      <div>
+        <div style="font-size:.875rem;font-weight:500;color:var(--paper);margin-bottom:.2rem">Create new listing — enter all fields</div>
+        <div style="font-size:.83rem;color:rgba(247,244,239,.6);line-height:1.6">Select <em>Add New Listing → Residential</em> (or the correct property type). Work through every tab: Property Details, Price/Terms, Remarks, Photos, Open Houses. Use the intake form as your source of truth. Do not invent or estimate any field — if something is blank on the form, leave the MLS field blank or use the MLS default. The broker reviews before activation.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.9rem;background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.1);border-radius:10px;padding:1rem">
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;flex-shrink:0;margin-top:.1rem">5</div>
+      <div>
+        <div style="font-size:.875rem;font-weight:500;color:var(--paper);margin-bottom:.2rem">Paste the listing description into public and agent remarks</div>
+        <div style="font-size:.83rem;color:rgba(247,244,239,.6);line-height:1.6">The AI listing agent generates two versions: Public Remarks (buyer-facing, no agent contact info, MLS character limit varies by MLS — typically 1,000–2,000 characters) and Private/Agent Remarks (showing instructions, lockbox info, contact preferences, buyer's agent compensation note). Paste each in the correct field. Check character count — trim if over limit.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.9rem;background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.1);border-radius:10px;padding:1rem">
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;flex-shrink:0;margin-top:.1rem">6</div>
+      <div>
+        <div style="font-size:.875rem;font-weight:500;color:var(--paper);margin-bottom:.2rem">Upload photos in correct order</div>
+        <div style="font-size:.83rem;color:rgba(247,244,239,.6);line-height:1.6">Upload all photos from the organized folder. Confirm the lead photo (01_exterior_front) is set as the primary display image. Most MLS systems auto-sort by filename — verify the order after upload. Check the photo tab shows all images, no blanks or errors.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.9rem;background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.1);border-radius:10px;padding:1rem">
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;flex-shrink:0;margin-top:.1rem">7</div>
+      <div>
+        <div style="font-size:.875rem;font-weight:500;color:var(--paper);margin-bottom:.2rem">Save as draft — do NOT activate</div>
+        <div style="font-size:.83rem;color:rgba(247,244,239,.6);line-height:1.6">Save the listing in <em>Draft</em> or <em>Coming Soon</em> status. Never activate a listing without broker review. Send the broker a message with: the MLS draft link, a checklist confirming all fields are entered, and a note of anything you couldn't complete or had questions about.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.9rem;background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.1);border-radius:10px;padding:1rem">
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;flex-shrink:0;margin-top:.1rem">8</div>
+      <div>
+        <div style="font-size:.875rem;font-weight:500;color:var(--paper);margin-bottom:.2rem">Broker reviews and activates</div>
+        <div style="font-size:.83rem;color:rgba(247,244,239,.6);line-height:1.6">Broker logs in, spot-checks all fields, reviews photos and description, and clicks <em>Activate</em>. This takes about 5 minutes. The MLS listing goes live immediately. Zillow, Realtor.com, Redfin, and Trulia pick it up automatically within 24–48 hours — no additional action needed.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.9rem;background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.1);border-radius:10px;padding:1rem">
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;flex-shrink:0;margin-top:.1rem">9</div>
+      <div>
+        <div style="font-size:.875rem;font-weight:500;color:var(--paper);margin-bottom:.2rem">Confirm syndication within 48 hours</div>
+        <div style="font-size:.83rem;color:rgba(247,244,239,.6);line-height:1.6">48 hours after activation, search the address on Zillow, Realtor.com, and Redfin. Confirm it appears with correct price, photos, and contact info. Screenshot confirmation and add to the property folder. If it doesn't appear, contact the MLS help desk — do not create a separate FSBO listing.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.9rem;background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.1);border-radius:10px;padding:1rem">
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;flex-shrink:0;margin-top:.1rem">10</div>
+      <div>
+        <div style="font-size:.875rem;font-weight:500;color:var(--paper);margin-bottom:.2rem">Notify the seller and deliver the publishing guide</div>
+        <div style="font-size:.83rem;color:rgba(247,244,239,.6);line-height:1.6">Email the seller: "Your listing is live on the MLS. Here are your links: [Zillow] [Realtor.com] [Redfin]. Your next steps are in the attached publishing guide — follow the free marketing checklist to maximize exposure." Attach or link the publishing guide PDF. Log the completion date in the tracking spreadsheet.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- WHERE TO FIND VA -->
+  <h3 style="font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--paper);margin-bottom:.75rem;margin-top:1.75rem">Step 3 — Where to find a trained MLS VA</h3>
+  <p style="font-size:.86rem;color:rgba(247,244,239,.6);margin-bottom:1rem;line-height:1.6">Look specifically for VAs with MLS entry experience — not general admin VAs. Ask during screening: "Which MLS systems have you used?" "Walk me through how you'd enter a new residential listing." A good candidate can answer both without coaching.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.5rem">
+    <div style="background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.1);border-radius:10px;padding:1rem;font-size:.83rem;color:rgba(247,244,239,.7);line-height:1.65">
+      <strong style="color:var(--paper);display:block;margin-bottom:.3rem">VA Masters — vamasters.com</strong>
+      Filipino listing coordinators. Starts ~$7/hr. They test candidates on actual MLS entry tasks before placement.
+    </div>
+    <div style="background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.1);border-radius:10px;padding:1rem;font-size:.83rem;color:rgba(247,244,239,.7);line-height:1.65">
+      <strong style="color:var(--paper);display:block;margin-bottom:.3rem">ShoreAgents — shoreagents.com</strong>
+      Real estate-specialist VAs. Full-time from ~$1,200/mo all-in. Deep MLS and transaction coordinator experience.
+    </div>
+    <div style="background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.1);border-radius:10px;padding:1rem;font-size:.83rem;color:rgba(247,244,239,.7);line-height:1.65">
+      <strong style="color:var(--paper);display:block;margin-bottom:.3rem">VirtualStaff.ph — virtualstaff.ph</strong>
+      Direct hire platform. Post a job, receive applicants. Pay $800–$1,500/mo directly — no agency markup. More work to vet, more savings.
+    </div>
+    <div style="background:rgba(247,244,239,.06);border:1px solid rgba(247,244,239,.1);border-radius:10px;padding:1rem;font-size:.83rem;color:rgba(247,244,239,.7);line-height:1.65">
+      <strong style="color:var(--paper);display:block;margin-bottom:.3rem">Virtudesk — virtudesk.com</strong>
+      Starts ~$9.55/hr. Proprietary time tracking. Good for brokers who want accountability visibility on hours worked.
+    </div>
+  </div>
+
+  <!-- KEY RULES -->
+  <div style="background:rgba(200,96,42,.15);border:1px solid rgba(200,96,42,.3);border-radius:var(--radius);padding:1.25rem;font-size:.855rem;line-height:1.75;color:rgba(247,244,239,.8)">
+    <strong style="color:var(--paper);display:block;margin-bottom:.5rem">Three non-negotiable rules for broker-VA MLS workflows</strong>
+    <div><strong style="color:var(--paper)">1. VA never activates.</strong> They build the draft. You activate. Every time. This takes you 5 minutes and keeps you compliant with MLS rules that require broker oversight of all submissions.</div>
+    <div style="margin-top:.4rem"><strong style="color:var(--paper)">2. VA never communicates directly with buyers or agents.</strong> All inquiries go to you or the seller. The VA's job is data entry and logistics only — not representation.</div>
+    <div style="margin-top:.4rem"><strong style="color:var(--paper)">3. Give the VA a dedicated MLS sub-login if your MLS supports it</strong> — not your personal broker login. This way you can revoke access instantly if needed and audit what was changed and when.</div>
+  </div>
+
+</div>
+</div>
+

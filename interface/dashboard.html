@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PropAgent — My Account</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1814;--paper:#f7f4ef;--warm:#f0ebe2;
+  --accent:#c8602a;--accent-light:#f5e8df;
+  --muted:#8c8880;--border:#ddd8d0;
+  --green:#2a6b4a;--green-light:#e8f2ec;
+  --blue:#1a3a6b;--blue-light:#e8edf8;
+  --gold:#b8860b;--gold-light:#fdf6e3;
+  --red:#8b2020;--red-light:#fdf0f0;
+  --radius:12px;
+  --shadow:0 2px 16px rgba(26,24,20,.08);
+  --shadow-lg:0 8px 40px rgba(26,24,20,.14);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+header{background:var(--ink);color:var(--paper);padding:0 1.75rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
+.logo{font-family:'DM Serif Display',serif;font-size:1.35rem;letter-spacing:-.02em;text-decoration:none;color:var(--paper)}
+.logo em{color:var(--accent);font-style:italic}
+.hdr-right{display:flex;align-items:center;gap:.75rem}
+.hdr-btn{font-size:.8rem;color:rgba(247,244,239,.6);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;transition:color .15s;padding:0}
+.hdr-btn:hover{color:var(--paper)}
+.hdr-btn.primary{background:var(--accent);color:white;padding:6px 14px;border-radius:20px;font-weight:500}
+.hdr-btn.primary:hover{background:#b05525;color:white}
+
+/* AUTH SCREEN */
+#auth-screen{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;animation:fadeUp .35s ease}
+.auth-wrap{width:100%;max-width:420px}
+.auth-card{background:white;border:1px solid var(--border);border-radius:16px;padding:2.25rem;box-shadow:var(--shadow)}
+.auth-card h2{font-family:'DM Serif Display',serif;font-size:1.6rem;margin-bottom:.25rem}
+.auth-card .sub{font-size:.875rem;color:var(--muted);margin-bottom:1.75rem;font-weight:300}
+.auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+.auth-tab{flex:1;padding:.65rem;font-size:.85rem;font-weight:500;text-align:center;cursor:pointer;color:var(--muted);border-bottom:2.5px solid transparent;transition:all .15s}
+.auth-tab.active{color:var(--ink);border-bottom-color:var(--accent)}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:.78rem;font-weight:500;color:var(--muted);margin-bottom:.35rem;letter-spacing:.02em}
+.field input{width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);background:var(--warm);outline:none;transition:border-color .15s}
+.field input:focus{border-color:var(--ink);background:white}
+.field input::placeholder{color:var(--muted)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.submit-btn{width:100%;padding:.85rem;background:var(--ink);color:var(--paper);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;transition:background .15s;margin-top:.25rem}
+.submit-btn:hover{background:var(--accent)}
+.divider-or{display:flex;align-items:center;gap:.75rem;margin:1.25rem 0;font-size:.78rem;color:var(--muted)}
+.divider-or::before,.divider-or::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-link{font-size:.82rem;color:var(--muted);text-align:center;margin-top:1.25rem}
+.auth-link a{color:var(--accent);text-decoration:none;font-weight:500;cursor:pointer}
+.auth-form{display:none}
+.auth-form.active{display:block}
+.terms-note{font-size:.75rem;color:var(--muted);text-align:center;margin-top:.75rem;line-height:1.5}
+.terms-note a{color:var(--muted);text-decoration:underline}
+.error-msg{background:var(--red-light);border:1px solid #f0c0c0;color:var(--red);border-radius:8px;padding:.65rem .9rem;font-size:.83rem;margin-bottom:1rem;display:none}
+.error-msg.show{display:block}
+
+/* DASHBOARD */
+#dashboard{display:none;flex:1;flex-direction:column}
+#dashboard.active{display:flex}
+.dash-layout{flex:1;display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 56px)}
+@media(max-width:700px){.dash-layout{grid-template-columns:1fr}.dash-sidebar{display:none}}
+
+/* SIDEBAR */
+.dash-sidebar{background:white;border-right:1px solid var(--border);padding:1.25rem 0;display:flex;flex-direction:column}
+.sidebar-user{padding:.75rem 1.25rem 1.25rem;border-bottom:1px solid var(--border);margin-bottom:.5rem}
+.sidebar-user .avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:500;margin-bottom:.5rem}
+.sidebar-user .name{font-size:.875rem;font-weight:500}
+.sidebar-user .email{font-size:.75rem;color:var(--muted)}
+.nav-item{display:flex;align-items:center;gap:.65rem;padding:.6rem 1.25rem;font-size:.85rem;cursor:pointer;color:var(--muted);transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:var(--warm);color:var(--ink)}
+.nav-item.active{background:var(--accent-light);color:var(--accent);border-left-color:var(--accent)}
+.nav-item svg{width:15px;height:15px;flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+.nav-section-label{font-size:.65rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.75rem 1.25rem .25rem;margin-top:.25rem}
+.sidebar-bottom{margin-top:auto;border-top:1px solid var(--border);padding-top:.5rem}
+
+/* MAIN CONTENT */
+.dash-main{overflow-y:auto;padding:2rem}
+.dash-panel{display:none}
+.dash-panel.active{display:block}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:1rem}
+.dash-header h1{font-family:'DM Serif Display',serif;font-size:1.6rem}
+.dash-header p{font-size:.875rem;color:var(--muted);margin-top:.15rem}
+.primary-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--ink);color:var(--paper);border:none;border-radius:10px;padding:.7rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:background .15s;text-decoration:none}
+.primary-btn:hover{background:var(--accent)}
+.primary-btn svg{width:14px;height:14px;flex-shrink:0}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+@media(max-width:860px){.stats-row{grid-template-columns:1fr 1fr}}
+.stat-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.25rem}
+.stat-card .stat-label{font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem}
+.stat-card .stat-value{font-family:'DM Serif Display',serif;font-size:1.75rem;line-height:1;color:var(--ink)}
+.stat-card .stat-sub{font-size:.75rem;color:var(--muted);margin-top:.25rem}
+
+/* LISTING CARDS */
+.listings-grid{display:flex;flex-direction:column;gap:.85rem}
+.listing-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;display:flex;gap:1.25rem;align-items:flex-start;transition:box-shadow .15s;cursor:pointer}
+.listing-card:hover{box-shadow:var(--shadow)}
+.listing-thumb{width:80px;height:64px;border-radius:8px;background:var(--warm);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--muted)}
+.listing-info{flex:1;min-width:0}
+.listing-address{font-size:.9rem;font-weight:500;margin-bottom:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.listing-meta{font-size:.78rem;color:var(--muted);margin-bottom:.5rem}
+.listing-tags{display:flex;gap:.4rem;flex-wrap:wrap}
+.tag{font-size:.68rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:20px}
+.tag.live{background:var(--green-light);color:var(--green)}
+.tag.draft{background:var(--warm);color:var(--muted)}
+.tag.pending{background:var(--gold-light);color:var(--gold)}
+.tag.sold{background:var(--blue-light);color:var(--blue)}
+.tag.mls{background:var(--blue-light);color:var(--blue)}
+.listing-right{flex-shrink:0;text-align:right}
+.listing-price{font-size:1rem;font-weight:500;color:var(--ink)}
+.listing-dom{font-size:.75rem;color:var(--muted);margin-top:.2rem}
+.listing-views{font-size:.75rem;color:var(--muted);margin-top:.1rem}
+
+/* ACTIVITY FEED */
+.activity-list{display:flex;flex-direction:column;gap:.5rem}
+.activity-item{display:flex;gap:.75rem;align-items:flex-start;padding:.7rem 0;border-bottom:1px solid var(--border)}
+.activity-item:last-child{border:none}
+.activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:.35rem}
+.activity-dot.green{background:var(--green)}
+.activity-dot.gold{background:var(--gold)}
+.activity-dot.blue{background:var(--blue)}
+.activity-dot.accent{background:var(--accent)}
+.activity-text{font-size:.855rem;flex:1;line-height:1.5}
+.activity-time{font-size:.75rem;color:var(--muted);flex-shrink:0;margin-top:.1rem}
+
+/* TWO-COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem}
+@media(max-width:700px){.two-col{grid-template-columns:1fr}}
+.card-box{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.card-box h3{font-size:.875rem;font-weight:500;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--border)}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:3rem 1.5rem;color:var(--muted)}
+.empty-icon{font-size:2.5rem;margin-bottom:.75rem;opacity:.4}
+.empty-state h3{font-size:1rem;font-weight:500;color:var(--ink);margin-bottom:.35rem}
+.empty-state p{font-size:.855rem;line-height:1.6;max-width:280px;margin:0 auto}
+
+
+
+/* LISTING PROFILE */
+#panel-listing-profile{animation:fadeUp .2s ease}
+.profile-back{display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;margin-bottom:1.25rem;transition:color .15s}
+.profile-back:hover{color:var(--ink)}
+.profile-hero{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;display:flex;gap:1.5rem;align-items:flex-start;flex-wrap:wrap}
+.profile-thumb{width:120px;height:90px;border-radius:10px;background:var(--warm);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2.5rem}
+.profile-hero-info{flex:1;min-width:200px}
+.profile-hero-info h2{font-family:'DM Serif Display',serif;font-size:1.35rem;margin-bottom:.2rem}
+.profile-hero-info .meta{font-size:.84rem;color:var(--muted);margin-bottom:.6rem}
+.profile-hero-info .tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem}
+.profile-hero-right{text-align:right;flex-shrink:0}
+.profile-price{font-family:'DM Serif Display',serif;font-size:1.75rem;color:var(--ink)}
+.profile-dom{font-size:.78rem;color:var(--muted);margin-top:.2rem}
+.profile-price-btn{margin-top:.6rem;font-size:.78rem;color:var(--accent);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline;padding:0}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+@media(max-width:640px){.profile-grid{grid-template-columns:1fr}}
+.profile-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.profile-card h3{font-size:.78rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.9rem}
+.platform-row{display:flex;align-items:center;gap:.75rem;padding:.55rem 0;border-bottom:1px solid var(--border);font-size:.855rem}
+.platform-row:last-child{border:none}
+.platform-logo{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0}
+.plt-zillow{background:#006aff;color:white}
+.plt-realtor{background:#d92228;color:white}
+.plt-redfin{background:#cc0000;color:white}
+.plt-trulia{background:#5eab1f;color:white}
+.plt-mls{background:var(--blue);color:white}
+.platform-name{flex:1;font-weight:500}
+.platform-status{font-size:.75rem}
+.platform-status.live{color:var(--green)}
+.platform-status.pending{color:var(--gold)}
+.platform-views{font-size:.75rem;color:var(--muted);margin-left:auto}
+.interest-item{display:flex;align-items:flex-start;gap:.65rem;padding:.6rem 0;border-bottom:1px solid var(--border);font-size:.845rem}
+.interest-item:last-child{border:none}
+.interest-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:.35rem}
+.interest-dot.showing{background:var(--green)}
+.interest-dot.inquiry{background:var(--blue)}
+.interest-dot.view{background:var(--muted)}
+.interest-body{flex:1;line-height:1.5}
+.interest-time{font-size:.73rem;color:var(--muted);flex-shrink:0;margin-top:.1rem}
+/* PRICE ANALYSIS */
+.price-analysis{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem}
+.price-analysis h3{font-size:.78rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.analysis-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+.analysis-verdict{display:flex;align-items:center;gap:.65rem}
+.verdict-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.verdict-icon.warn{background:var(--gold-light)}
+.verdict-icon.good{background:var(--green-light)}
+.verdict-title{font-size:.9rem;font-weight:500}
+.verdict-sub{font-size:.78rem;color:var(--muted)}
+.analysis-date{font-size:.75rem;color:var(--muted);text-align:right}
+.analysis-body{font-size:.855rem;color:var(--muted);line-height:1.7;margin-bottom:1rem;padding:.85rem 1rem;background:var(--warm);border-radius:8px}
+.analysis-comps{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:1rem}
+.analysis-comps th{text-align:left;padding:.5rem .75rem;font-size:.7rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:1.5px solid var(--border)}
+.analysis-comps td{padding:.55rem .75rem;border-bottom:1px solid var(--border)}
+.analysis-comps tr:last-child td{border:none}
+.analysis-comps .subject{font-weight:500;background:var(--accent-light)}
+.recommend-box{background:var(--gold-light);border:1px solid #e8d4a0;border-radius:10px;padding:.9rem 1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.recommend-box.neutral{background:var(--green-light);border-color:#b7d9c5}
+.recommend-num{font-family:'DM Serif Display',serif;font-size:1.5rem;flex-shrink:0;color:var(--ink)}
+.recommend-text{flex:1;font-size:.845rem;line-height:1.6;color:var(--ink)}
+.recommend-action{display:flex;gap:.5rem;margin-top:.75rem}
+.btn-accept{padding:.55rem 1rem;background:var(--ink);color:white;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer;transition:background .15s}
+.btn-accept:hover{background:var(--accent)}
+.btn-dismiss{padding:.55rem 1rem;background:white;color:var(--muted);border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer;transition:all .15s}
+.btn-dismiss:hover{border-color:var(--ink);color:var(--ink)}
+.next-analysis{font-size:.75rem;color:var(--muted);margin-top:.5rem}
+/* NEW LISTING MODAL */
+#new-listing-modal .modal{max-width:520px}
+.new-listing-steps{display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.25rem}
+.nl-step{display:flex;gap:.85rem;align-items:flex-start;padding:.85rem 1rem;background:var(--warm);border-radius:10px;font-size:.855rem;line-height:1.6}
+.nl-num{width:24px;height:24px;border-radius:50%;background:var(--ink);color:white;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:500;flex-shrink:0;margin-top:.05rem}
+
+/* GOOGLE BUTTON */
+.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:.65rem;padding:.75rem;border:1.5px solid var(--border);border-radius:10px;background:white;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:500;color:var(--ink);cursor:pointer;transition:all .15s;margin-bottom:.25rem}
+.google-btn:hover{border-color:#c0cfe8;background:#fafafa;box-shadow:0 1px 6px rgba(26,24,20,.08)}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ink);color:var(--paper);padding:.8rem 1.15rem;border-radius:var(--radius);font-size:.83rem;box-shadow:var(--shadow-lg);z-index:999;display:flex;align-items:center;gap:.65rem;animation:slideUp .3s ease}
+.toast .td{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0}
+
+/* SUBMIT MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(26,24,20,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:1.5rem;display:none}
+.modal-bg.open{display:flex;animation:fadeUp .2s ease}
+.modal{background:white;border-radius:16px;padding:2rem;max-width:480px;width:100%;box-shadow:var(--shadow-lg)}
+.modal h3{font-family:'DM Serif Display',serif;font-size:1.35rem;margin-bottom:.4rem}
+.modal p{font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.25rem}
+.modal-price{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--ink);margin-bottom:1.25rem}
+.modal-price span{font-size:.9rem;font-family:'DM Sans',sans-serif;color:var(--muted);font-weight:300}
+.modal-actions{display:flex;gap:.75rem;justify-content:flex-end}
+.modal-cancel{padding:.7rem 1.1rem;border:1.5px solid var(--border);background:white;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;transition:all .15s}
+.modal-cancel:hover{border-color:var(--ink)}
+.modal-confirm{padding:.7rem 1.25rem;background:var(--accent);color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:background .15s}
+.modal-confirm:hover{background:#b05525}
+.checklist-mini{background:var(--warm);border-radius:10px;padding:.9rem 1rem;margin-bottom:1.25rem;font-size:.845rem;line-height:1.8;color:var(--ink)}
+.checklist-mini .row{display:flex;align-items:center;gap:.5rem}
+.checklist-mini .ck-icon{color:var(--green);flex-shrink:0}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="#">Prop<em>Agent</em></a>
+  <div class="hdr-right" id="hdr-right">
+    <button class="hdr-btn" onclick="showAuth('login')">Sign in</button>
+    <button class="hdr-btn primary" onclick="showAuth('signup')">Create account</button>
+  </div>
+</header>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign in</div>
+        <div class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create account</div>
+      </div>
+
+      <!-- SIGN UP -->
+      <div class="auth-form" id="form-signup">
+        <button class="google-btn" onclick="googleAuth()">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
+        </button>
+        <div class="divider-or">or</div>
+        <div class="error-msg" id="signup-error"></div>
+        <div class="field-row">
+          <div class="field">
+            <label>First name</label>
+            <input type="text" id="signup-first" placeholder="Jane" autocomplete="given-name">
+          </div>
+          <div class="field">
+            <label>Last name</label>
+            <input type="text" id="signup-last" placeholder="Smith" autocomplete="family-name">
+          </div>
+        </div>
+        <div class="field">
+          <label>Email address</label>
+          <input type="email" id="signup-email" placeholder="jane@email.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label>Phone number</label>
+          <input type="tel" id="signup-phone" placeholder="(555) 000-0000" autocomplete="tel">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="signup-pass" placeholder="At least 8 characters" autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label>Confirm password</label>
+          <input type="password" id="signup-confirm" placeholder="Re-enter your password" autocomplete="new-password">
+        </div>
+        <button class="submit-btn" onclick="createAccount()">Create my account</button>
+        <p class="terms-note">By creating an account you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+      </div>
+
+      <!-- SIGN IN -->
+      <div class="auth-form active" id="form-login">
+        <button class="google-btn" onclick="googleAuth()">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
+        </button>
+        <div class="divider-or">or</div>
+        <div class="error-msg" id="login-error"></div>
+        <div class="field">
+          <label>Email address</label>
+          <input type="email" id="login-email" placeholder="jane@email.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="login-pass" placeholder="Your password" autocomplete="current-password">
+        </div>
+        <button class="submit-btn" onclick="signIn()">Sign in</button>
+        <div class="auth-link"><a href="#">Forgot your password?</a></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="dash-layout">
+
+    <!-- SIDEBAR -->
+    <div class="dash-sidebar">
+      <div class="sidebar-user">
+        <div class="avatar" id="user-avatar">JD</div>
+        <div class="name" id="user-name">Jane Smith</div>
+        <div class="email" id="user-email">jane@email.com</div>
+      </div>
+
+      <div class="nav-section-label">My listings</div>
+      <div class="nav-item active" onclick="switchPanel('listings')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6h6M5 9h4"/></svg>
+        All listings
+      </div>
+      <div class="nav-item" onclick="switchPanel('activity')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 2v4l2.5 2.5"/><circle cx="8" cy="9" r="6"/></svg>
+        Recent activity
+      </div>
+      <div class="nav-item" onclick="switchPanel('appointments')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/></svg>
+        Appointments
+      </div>
+
+      <div class="nav-section-label">Account</div>
+      <div class="nav-item" onclick="switchPanel('profile')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+        Profile
+      </div>
+      <div class="nav-item" onclick="switchPanel('billing')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="4" width="12" height="9" rx="2"/><path d="M2 8h12"/></svg>
+        Billing & payments
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="nav-item" onclick="signOut()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3M10 11l3-3-3-3M13 8H6"/></svg>
+          Sign out
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN PANELS -->
+    <div class="dash-main">
+
+      <!-- LISTINGS PANEL -->
+      <div class="dash-panel active" id="panel-listings">
+        <div class="dash-header">
+          <div>
+            <h1>My listings</h1>
+            <p>Manage all your properties from one place</p>
+          </div>
+          <button class="primary-btn" onclick="openNewListingModal()">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 2v12M2 8h12"/></svg>
+            New listing
+          </button>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Active listings</div>
+            <div class="stat-value" id="stat-active">1</div>
+            <div class="stat-sub">Live on MLS</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Showing requests</div>
+            <div class="stat-value">4</div>
+            <div class="stat-sub">This week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Offers received</div>
+            <div class="stat-value">0</div>
+            <div class="stat-sub">In review</div>
+          </div>
+        </div>
+
+        <div class="listings-grid" id="listings-grid">
+          <div class="listing-card" onclick="openListingProfile()">
+            <div class="listing-thumb">🏠</div>
+            <div class="listing-info">
+              <div class="listing-address">456 Elm Street, Anaheim CA 92801</div>
+              <div class="listing-meta">4 bd · 2.5 ba · 2,100 sqft · 6,500 sqft lot</div>
+              <div class="listing-tags">
+                <span class="tag live">Live</span>
+                <span class="tag mls">On MLS</span>
+                <span class="tag" style="background:var(--gold-light);color:var(--gold)">⚠ Price review</span>
+              </div>
+            </div>
+            <div class="listing-right">
+              <div class="listing-price">$875,000</div>
+              <div class="listing-dom">26 days on market</div>
+              <div class="listing-views">4 showings</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LISTING PROFILE PANEL -->
+      <div class="dash-panel" id="panel-listing-profile">
+        <button class="profile-back" onclick="switchPanel('listings')">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M10 4l-4 4 4 4"/></svg>
+          Back to listings
+        </button>
+
+        <!-- HERO -->
+        <div class="profile-hero">
+          <div class="profile-thumb">🏠</div>
+          <div class="profile-hero-info">
+            <h2>456 Elm Street, Anaheim CA 92801</h2>
+            <div class="meta">4 bd · 2.5 ba · 2,100 sqft · 6,500 sqft lot · Built 1988 · HOA $185/mo</div>
+            <div class="tags">
+              <span class="tag live">Live</span>
+              <span class="tag mls">On MLS</span>
+            </div>
+            <div style="font-size:.78rem;color:var(--muted)">Listed March 1, 2026 · Buyer's agent commission: 2.5%</div>
+          </div>
+          <div class="profile-hero-right">
+            <div class="profile-price">$875,000</div>
+            <div class="profile-dom">26 days on market</div>
+            <button class="profile-price-btn" onclick="document.getElementById('price-analysis-section').scrollIntoView({behavior:'smooth'})">View price analysis ↓</button>
+          </div>
+        </div>
+
+        <div class="profile-grid">
+          <!-- PLATFORMS -->
+          <div class="profile-card">
+            <h3>Listed on</h3>
+            <div class="platform-row">
+              <div class="platform-logo plt-mls">MLS</div>
+              <div class="platform-name">Local MLS</div>
+              <span class="platform-status live">● Live</span>
+              
+            </div>
+            <div class="platform-row">
+              <div class="platform-logo plt-zillow">Z</div>
+              <div class="platform-name">Zillow</div>
+              <span class="platform-status live">● Live</span>
+              
+            </div>
+            <div class="platform-row">
+              <div class="platform-logo plt-realtor">R</div>
+              <div class="platform-name">Realtor.com</div>
+              <span class="platform-status live">● Live</span>
+              
+            </div>
+            <div class="platform-row">
+              <div class="platform-logo plt-redfin">RF</div>
+              <div class="platform-name">Redfin</div>
+              <span class="platform-status live">● Live</span>
+              
+            </div>
+            <div class="platform-row">
+              <div class="platform-logo plt-trulia">T</div>
+              <div class="platform-name">Trulia</div>
+              <span class="platform-status live">● Live</span>
+              
+            </div>
+          </div>
+
+          <!-- INTEREST -->
+          <div class="profile-card">
+            <h3>Buyer interest</h3>
+            <div class="interest-item">
+              <div class="interest-dot showing"></div>
+              <div class="interest-body"><strong>Showing confirmed</strong> — Sat Apr 5, 2:00 PM<br><span style="font-size:.78rem;color:var(--muted)">Coldwell Banker agent · buyer pre-approved</span></div>
+              <div class="interest-time">Yesterday</div>
+            </div>
+            <div class="interest-item">
+              <div class="interest-dot showing"></div>
+              <div class="interest-body"><strong>Showing confirmed</strong> — Sun Apr 6, 11:00 AM<br><span style="font-size:.78rem;color:var(--muted)">Direct buyer · no agent</span></div>
+              <div class="interest-time">Yesterday</div>
+            </div>
+            <div class="interest-item">
+              <div class="interest-dot showing"></div>
+              <div class="interest-body"><strong>Showing confirmed</strong> — Sun Apr 6, 3:00 PM<br><span style="font-size:.78rem;color:var(--muted)">Century 21 agent · buyer pre-qualified</span></div>
+              <div class="interest-time">6 hrs ago</div>
+            </div>
+            <div class="interest-item">
+              <div class="interest-dot inquiry"></div>
+              <div class="interest-body"><strong>Agent inquiry</strong> — RE/MAX asking about commission<br><span style="font-size:.78rem;color:var(--muted)">Responded: 2.5% per MLS listing</span></div>
+              <div class="interest-time">18 hrs ago</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PROPERTY DETAILS -->
+        <div class="profile-card" style="margin-bottom:1.25rem">
+          <h3>Property details</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.75rem;font-size:.855rem">
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:.15rem">Bedrooms</div><div style="font-weight:500">4</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:.15rem">Bathrooms</div><div style="font-weight:500">2 full · 1 half</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:.15rem">Living area</div><div style="font-weight:500">2,100 sqft</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:.15rem">Lot size</div><div style="font-weight:500">6,500 sqft</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:.15rem">Year built</div><div style="font-weight:500">1988</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:.15rem">Garage</div><div style="font-weight:500">2-car attached</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:.15rem">HOA</div><div style="font-weight:500">$185/mo · Elm Park</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:.15rem">Annual taxes</div><div style="font-weight:500">$10,200</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:.15rem">Pool</div><div style="font-weight:500">No</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:.15rem">HVAC</div><div style="font-weight:500">New 2023</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:.15rem">Kitchen</div><div style="font-weight:500">Updated 2022</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:.15rem">Roof</div><div style="font-weight:500">Original 1988 ⚠</div></div>
+          </div>
+        </div>
+
+        <!-- WEEKLY PRICE ANALYSIS -->
+        <div class="price-analysis" id="price-analysis-section">
+          <h3>Weekly price analysis</h3>
+          <div class="analysis-header">
+            <div class="analysis-verdict">
+              <div class="verdict-icon warn">⚠️</div>
+              <div>
+                <div class="verdict-title">Price reduction may help</div>
+                <div class="verdict-sub">Based on 4 comparable sales this week</div>
+              </div>
+            </div>
+            <div class="analysis-date">Analysis run: Mar 27, 2026<br><span style="color:var(--green)">Next run: Apr 3, 2026</span></div>
+          </div>
+          <div class="analysis-body">
+            Your listing has been on the market for 26 days at $875,000. Four comparable homes sold in the past 30 days in the 92801 zip code at a median of $848,000, putting your price approximately 3.2% above the current comp median. You've had 4 showings but no offers yet. In a balanced market like this one, homes that don't receive offers in the first 21 days often benefit from a modest price adjustment to reset buyer interest and algorithm placement on Zillow and Realtor.com.
+          </div>
+          <table class="analysis-comps">
+            <thead>
+              <tr><th>Address</th><th>Sqft</th><th>Sale price</th><th>$/sqft</th><th>DOM</th></tr>
+            </thead>
+            <tbody>
+              <tr class="subject"><td>456 Elm St (yours)</td><td>2,100</td><td>$875,000</td><td>$417</td><td>26 (active)</td></tr>
+              <tr><td>312 Oak Ave</td><td>2,050</td><td>$851,000</td><td>$415</td><td>18</td></tr>
+              <tr><td>789 Maple Dr</td><td>2,200</td><td>$862,000</td><td>$392</td><td>24</td></tr>
+              <tr><td>104 Cedar Ln</td><td>1,980</td><td>$835,000</td><td>$422</td><td>11</td></tr>
+              <tr><td>501 Pine St</td><td>2,150</td><td>$844,000</td><td>$393</td><td>31</td></tr>
+            </tbody>
+          </table>
+          <div class="recommend-box">
+            <div class="recommend-num">$849,000</div>
+            <div class="recommend-text">
+              <strong>Recommended price</strong> — a reduction of $26,000 (3.0%) would bring you in line with recent comp sales and reset your listing's position in Zillow search results. This is a suggestion — you stay in control of your price.
+            </div>
+          </div>
+          <div class="recommend-action">
+            <button class="btn-accept" onclick="acceptReduction()">Accept — update to $849,000</button>
+            <button class="btn-dismiss" onclick="dismissReduction()">Keep current price</button>
+          </div>
+          <div class="next-analysis">Your next automated price analysis will run on April 3, 2026.</div>
+        </div>
+
+      </div>
+
+      <!-- ACTIVITY PANEL -->
+      <div class="dash-panel" id="panel-activity">
+        <div class="dash-header">
+          <div><h1>Recent activity</h1><p>What's happened across all your listings</p></div>
+        </div>
+        <div class="card-box">
+          <h3>Activity log</h3>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-dot green"></div>
+              <div class="activity-text">Your listing at 456 Elm St went live on the MLS and Zillow</div>
+              <div class="activity-time">2 days ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot blue"></div>
+              <div class="activity-text">Showing request received for 456 Elm St — Saturday 2:00 PM</div>
+              <div class="activity-time">1 day ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot gold"></div>
+              <div class="activity-text">Agent inquiry: RE/MAX agent asking about buyer commission rate</div>
+              <div class="activity-time">18 hours ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot green"></div>
+              <div class="activity-text">Listing confirmed on Realtor.com and Redfin</div>
+              <div class="activity-time">18 hours ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot blue"></div>
+              <div class="activity-text">2 more showing requests received — Sunday 11 AM and 3 PM</div>
+              <div class="activity-time">6 hours ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- APPOINTMENTS PANEL -->
+      <div class="dash-panel" id="panel-appointments">
+        <div class="dash-header">
+          <div><h1>Appointments</h1><p>All scheduled showings and inspections</p></div>
+        </div>
+        <div class="listings-grid">
+          <div class="card-box">
+            <h3>Upcoming — 456 Elm Street</h3>
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-dot green"></div>
+                <div class="activity-text"><strong>Showing</strong> — Saturday, Apr 5 · 2:00 PM<br><span style="font-size:.78rem;color:var(--muted)">Buyer represented by Coldwell Banker agent · 30 min</span></div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot green"></div>
+                <div class="activity-text"><strong>Showing</strong> — Sunday, Apr 6 · 11:00 AM<br><span style="font-size:.78rem;color:var(--muted)">Direct buyer — no agent · 45 min</span></div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot green"></div>
+                <div class="activity-text"><strong>Showing</strong> — Sunday, Apr 6 · 3:00 PM<br><span style="font-size:.78rem;color:var(--muted)">Buyer represented by Century 21 agent · 30 min</span></div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot gold"></div>
+                <div class="activity-text"><strong>Listing Photography</strong> — TBD<br><span style="font-size:.78rem;color:var(--muted)">Pending scheduling</span></div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot gold"></div>
+                <div class="activity-text"><strong>Pre-listing Inspection</strong> — TBD<br><span style="font-size:.78rem;color:var(--muted)">Recommended · pending scheduling</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE PANEL -->
+      <div class="dash-panel" id="panel-profile">
+        <div class="dash-header">
+          <div><h1>Profile</h1><p>Your account details</p></div>
+        </div>
+        <div class="card-box" style="max-width:480px">
+          <h3>Personal information</h3>
+          <div class="field">
+            <label>First name</label>
+            <input type="text" id="profile-first" style="width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);background:var(--warm);outline:none">
+          </div>
+          <div class="field">
+            <label>Last name</label>
+            <input type="text" id="profile-last" style="width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);background:var(--warm);outline:none">
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" id="profile-email" style="width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);background:var(--warm);outline:none">
+          </div>
+          <div class="field">
+            <label>Phone</label>
+            <input type="tel" id="profile-phone" style="width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);background:var(--warm);outline:none">
+          </div>
+          <button class="submit-btn" onclick="saveProfile()" style="width:auto;padding:.7rem 1.5rem;margin-top:.5rem">Save changes</button>
+        </div>
+      </div>
+
+      <!-- BILLING PANEL -->
+      <div class="dash-panel" id="panel-billing">
+        <div class="dash-header">
+          <div><h1>Billing & payments</h1><p>Transaction history and payment methods</p></div>
+        </div>
+        <div class="card-box" style="margin-bottom:1.25rem">
+          <h3>Payment history</h3>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-dot green"></div>
+              <div class="activity-text"><strong>MLS Listing — 456 Elm St</strong><br><span style="font-size:.78rem;color:var(--muted)">Flat fee MLS submission</span></div>
+              <div style="text-align:right;flex-shrink:0">
+                <div style="font-size:.875rem;font-weight:500">$500.00</div>
+                <div style="font-size:.75rem;color:var(--green)">Paid</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-box" style="max-width:420px">
+          <h3>Payment method</h3>
+          <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem 0;font-size:.875rem">
+            <div style="width:40px;height:26px;background:var(--warm);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:600;color:var(--muted)">VISA</div>
+            <div>Visa ending in 4242 · Expires 12/27</div>
+          </div>
+          <button style="font-size:.82rem;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;font-family:'DM Sans',sans-serif">+ Add payment method</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- NEW LISTING MODAL -->
+<div class="modal-bg" id="new-listing-modal">
+  <div class="modal" id="new-listing-modal">
+    <h3>Start a new listing</h3>
+    <p style="margin-bottom:.75rem">This is a <strong>100% FSBO service.</strong> You sell your home yourself — we only enter your listing data into the MLS. We do not represent you, negotiate on your behalf, or advise on offers.</p>
+    <div style="background:var(--green-light);border:1px solid #b7d9c5;border-radius:10px;padding:.8rem 1rem;margin-bottom:1.1rem;font-size:.835rem;line-height:1.65;color:#2a4a38">
+      <strong>Free to use.</strong> The AI agent, market analysis, and listing preparation tools are all free. The only charge is the flat <strong>$500 MLS submission fee</strong> — only if you choose to have us list it.
+    </div>
+    <div class="new-listing-steps">
+      <div class="nl-step">
+        <div class="nl-num">1</div>
+        <div><strong>You provide the details.</strong> The AI agent collects your property info, photos, and asking price. It only uses what you give it — we don't verify, appraise, or modify your data.</div>
+      </div>
+      <div class="nl-step">
+        <div class="nl-num">2</div>
+        <div><strong>We prepare your MLS package.</strong> Market analysis and comps are provided for your reference only. You decide the price. You decide the buyer's agent commission. We build the submission from your answers.</div>
+      </div>
+      <div class="nl-step">
+        <div class="nl-num">3</div>
+        <div><strong>Optional: pay $500 and we submit.</strong> We enter exactly what you provided into the MLS under our licensed brokerage. Your listing appears on Zillow, Realtor.com, Redfin, and Trulia automatically. You handle all showings, offers, and closing yourself.</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeNewListingModal()">Cancel</button>
+      <button class="modal-confirm" onclick="startNewListing()">Start with my agent →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ─────────────────────────────────────────────────────────────
+let currentUser = null;
+
+// ── AUTH ──────────────────────────────────────────────────────────────
+function showAuth(tab) {
+  switchAuthTab(tab || 'login');
+  document.getElementById('auth-screen').style.display = 'flex';
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('form-login').classList.toggle('active', tab === 'login');
+  document.getElementById('form-signup').classList.toggle('active', tab === 'signup');
+}
+
+function createAccount() {
+  const first = document.getElementById('signup-first').value.trim();
+  const last = document.getElementById('signup-last').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const phone = document.getElementById('signup-phone').value.trim();
+  const pass = document.getElementById('signup-pass').value;
+  const confirm = document.getElementById('signup-confirm').value;
+  const err = document.getElementById('signup-error');
+
+  if (!first || !last) { showError(err, 'Please enter your first and last name.'); return; }
+  if (!email || !email.includes('@')) { showError(err, 'Please enter a valid email address.'); return; }
+  if (pass.length < 8) { showError(err, 'Password must be at least 8 characters.'); return; }
+  if (pass !== confirm) { showError(err, 'Passwords do not match.'); return; }
+  err.classList.remove('show');
+
+  currentUser = { first, last, email, phone };
+  enterDashboard();
+}
+
+function googleAuth() {
+  // Placeholder — wire to Supabase Google OAuth when ready
+  currentUser = { first: 'Jane', last: 'Smith', email: 'jane@gmail.com', phone: '' };
+  enterDashboard();
+}
+
+function signIn() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-error');
+
+  if (!email || !email.includes('@')) { showError(err, 'Please enter your email address.'); return; }
+  if (!pass) { showError(err, 'Please enter your password.'); return; }
+  err.classList.remove('show');
+
+  // Demo: accept any valid-looking credentials
+  currentUser = { first: 'Jane', last: 'Smith', email, phone: '', role: 'seller' };
+  enterDashboard();
+}
+
+function showError(el, msg) {
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function enterDashboard() {
+  const { first, last, email } = currentUser;
+  document.getElementById('user-name').textContent = `${first} ${last}`;
+  document.getElementById('user-email').textContent = email;
+  document.getElementById('user-avatar').textContent = `${first[0]}${last[0]}`.toUpperCase();
+  document.getElementById('profile-first').value = first;
+  document.getElementById('profile-last').value = last;
+  document.getElementById('profile-email').value = email;
+  document.getElementById('profile-phone').value = currentUser.phone || '';
+
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('dashboard').classList.add('active');
+  document.getElementById('hdr-right').innerHTML = `
+    <span style="font-size:.82rem;color:rgba(247,244,239,.6)">${first} ${last}</span>
+    <button class="hdr-btn" onclick="signOut()">Sign out</button>
+  `;
+  toast(`Welcome back, ${first}.`);
+}
+
+function signOut() {
+  currentUser = null;
+  document.getElementById('dashboard').classList.remove('active');
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('hdr-right').innerHTML = `
+    <button class="hdr-btn" onclick="showAuth('login')">Sign in</button>
+    <button class="hdr-btn primary" onclick="showAuth('signup')">Create account</button>
+  `;
+  switchPanel('listings');
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────
+function switchPanel(id) {
+  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.currentTarget && event.currentTarget.classList.add('active');
+  // manually set active nav since event target may not always be the nav item
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + id + "'")) {
+      n.classList.add('active');
+    }
+  });
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────
+function openSubmitModal() {
+  document.getElementById('submit-modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('submit-modal').classList.remove('open');
+}
+function confirmSubmit() {
+  closeModal();
+  toast('Listing package submitted — we\'ll have you live within 24 hours.');
+}
+
+// ── PROFILE ───────────────────────────────────────────────────────────
+function saveProfile() {
+  if (currentUser) {
+    currentUser.first = document.getElementById('profile-first').value.trim();
+    currentUser.last = document.getElementById('profile-last').value.trim();
+    document.getElementById('user-name').textContent = `${currentUser.first} ${currentUser.last}`;
+    document.getElementById('user-avatar').textContent = `${currentUser.first[0]}${currentUser.last[0]}`.toUpperCase();
+  }
+  toast('Profile saved.');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────
+function toast(msg) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<div class="td"></div>${msg}`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// Close modal on bg click
+document.querySelector('#new-listing-modal.modal-bg').addEventListener('click', function(e) {
+  if (e.target === this) closeNewListingModal();
+});
+
+// Enter key on auth forms
+document.getElementById('signup-pass').addEventListener('keydown', e => { if(e.key==='Enter') createAccount(); });
+document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') signIn(); });
+
+// ── NEW LISTING MODAL ─────────────────────────────────────────────────
+function openNewListingModal() {
+  document.querySelector('.modal-bg').classList.add('open');
+}
+function closeNewListingModal() {
+  document.querySelector('.modal-bg').classList.remove('open');
+}
+function startNewListing() {
+  closeNewListingModal();
+  toast("Opening your listing agent — let's get started.");
+}
+
+// ── LISTING PROFILE ───────────────────────────────────────────────────
+function openListingProfile() {
+  document.querySelectorAll('.dash-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('panel-listing-profile').classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  document.querySelector('.dash-main').scrollTop = 0;
+}
+function acceptReduction() {
+  document.querySelector('.profile-price').textContent = '$849,000';
+  document.querySelector('.recommend-box').className = 'recommend-box neutral';
+  document.querySelector('.recommend-box .recommend-num').textContent = '$849,000';
+  document.querySelector('.recommend-action').innerHTML = '<span style="font-size:.83rem;color:var(--green)">✓ Price updated to $849,000 — MLS will reflect this within 24 hours.</span>';
+  document.querySelector('.verdict-icon').textContent = '✓';
+  document.querySelector('.verdict-icon').className = 'verdict-icon good';
+  document.querySelector('.verdict-title').textContent = 'Price updated';
+  document.querySelector('.verdict-sub').textContent = 'Reduction accepted — listing being updated';
+  toast('Price reduction accepted. MLS update in progress.');
+}
+function dismissReduction() {
+  document.querySelector('.recommend-action').innerHTML = '<span style="font-size:.83rem;color:var(--muted)">Keeping current price of $875,000. Next analysis on April 3.</span>';
+  toast('Keeping current price. Next analysis on April 3.');
+}
+</script>
+</body>
+</html>

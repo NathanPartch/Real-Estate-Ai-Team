@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+
+# Reports (may contain client data — exclude from version control)
+data/reports/
+
+# Generated progress files (runtime state)
+data/progress/roi_*.json
+
+# OS
+.DS_Store
+Thumbs.db
