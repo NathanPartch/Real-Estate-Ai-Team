@@ -744,34 +744,37 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ── STATE ─────────────────────────────────────────────────────────────
 let currentUser = null;
 
-// ── SESSION RESTORE — handles page-load session and Google OAuth redirect ──
+// ── AUTH STATE MACHINE ────────────────────────────────────────────────
+// Single source of truth for all auth transitions.
+// INITIAL_SESSION fires on page load (restores stored session).
+// SIGNED_IN fires after signInWithPassword, signUp, and OAuth redirect.
+// SIGNED_OUT fires after signOut().
 sb.auth.onAuthStateChange(async (event, session) => {
-  if (event === 'SIGNED_IN' && session?.user && !currentUser) {
-    const meta = session.user.user_metadata || {};
-    let profile = await loadProfile(session.user.id);
-    if (!profile) {
-      // First sign-in (e.g. Google OAuth) — create the profile row
-      await sb.from('profiles').upsert({
-        id: session.user.id,
-        first_name: meta.first_name || meta.full_name?.split(' ')[0] || '',
-        last_name:  meta.last_name  || meta.full_name?.split(' ').slice(1).join(' ') || '',
-        email: session.user.email,
-        phone: meta.phone || ''
-      });
-      profile = {
-        id: session.user.id,
-        first: meta.first_name || meta.full_name?.split(' ')[0] || session.user.email.split('@')[0],
-        last:  meta.last_name  || meta.full_name?.split(' ').slice(1).join(' ') || '',
-        email: session.user.email,
-        phone: meta.phone || ''
-      };
-    }
-    currentUser = profile;
+  if ((event === 'INITIAL_SESSION' || event === 'SIGNED_IN') && session?.user) {
+    if (currentUser) return; // already in dashboard, ignore token refreshes
+    currentUser = await buildCurrentUser(session.user);
     enterDashboard();
+  } else if (event === 'SIGNED_OUT') {
+    currentUser = null;
+    exitDashboard();
   }
 });
 
 // ── AUTH HELPERS ──────────────────────────────────────────────────────
+async function buildCurrentUser(authUser) {
+  const profile = await loadProfile(authUser.id);
+  if (profile) return profile;
+  // First sign-in — create profile row from auth metadata
+  const meta  = authUser.user_metadata || {};
+  const first = meta.first_name || meta.full_name?.split(' ')[0] || authUser.email.split('@')[0];
+  const last  = meta.last_name  || meta.full_name?.split(' ').slice(1).join(' ') || '';
+  await sb.from('profiles').upsert({
+    id: authUser.id, first_name: first, last_name: last,
+    email: authUser.email, phone: meta.phone || ''
+  });
+  return { id: authUser.id, first, last, email: authUser.email, phone: meta.phone || '' };
+}
+
 async function loadProfile(userId) {
   const { data, error } = await sb.from('profiles').select('*').eq('id', userId).single();
   if (error || !data) return null;
@@ -800,10 +803,10 @@ async function createAccount() {
   const confirm = document.getElementById('signup-confirm').value;
   const err     = document.getElementById('signup-error');
 
-  if (!first || !last)              { showError(err, 'Please enter your first and last name.'); return; }
+  if (!first || !last)               { showError(err, 'Please enter your first and last name.'); return; }
   if (!email || !email.includes('@')) { showError(err, 'Please enter a valid email address.'); return; }
-  if (pass.length < 8)              { showError(err, 'Password must be at least 8 characters.'); return; }
-  if (pass !== confirm)             { showError(err, 'Passwords do not match.'); return; }
+  if (pass.length < 8)               { showError(err, 'Password must be at least 8 characters.'); return; }
+  if (pass !== confirm)              { showError(err, 'Passwords do not match.'); return; }
   err.classList.remove('show');
 
   const btn = document.querySelector('#form-signup .submit-btn');
@@ -821,15 +824,11 @@ async function createAccount() {
   if (error) { showError(err, error.message); return; }
 
   if (!data.session) {
-    // Email confirmation required — Supabase hasn't signed the user in yet
+    // Email confirmation required
     toast('Account created! Please check your email to confirm.');
     return;
   }
-
-  // Email confirmation is disabled — user is signed in immediately
-  await sb.from('profiles').upsert({ id: data.user.id, first_name: first, last_name: last, email, phone });
-  currentUser = { id: data.user.id, first, last, email, phone };
-  enterDashboard();
+  // Auto-confirmed: onAuthStateChange(SIGNED_IN) fires → enterDashboard()
 }
 
 async function googleAuth() {
@@ -853,23 +852,13 @@ async function signIn() {
   btn.textContent = 'Signing in…';
   btn.disabled = true;
 
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
 
   btn.textContent = 'Sign in';
   btn.disabled = false;
 
-  if (error) { showError(err, error.message); return; }
-
-  const profile = await loadProfile(data.user.id);
-  const meta = data.user.user_metadata || {};
-  currentUser = profile || {
-    id: data.user.id,
-    first: meta.first_name || email.split('@')[0],
-    last:  meta.last_name  || '',
-    email: data.user.email,
-    phone: meta.phone || ''
-  };
-  enterDashboard();
+  if (error) { showError(err, error.message); }
+  // Success: onAuthStateChange(SIGNED_IN) fires → enterDashboard()
 }
 
 function showError(el, msg) {
@@ -902,7 +891,10 @@ async function enterDashboard() {
 
 async function signOut() {
   await sb.auth.signOut();
-  currentUser = null;
+  // onAuthStateChange(SIGNED_OUT) fires → exitDashboard()
+}
+
+function exitDashboard() {
   document.getElementById('listings-grid').innerHTML = '';
   document.getElementById('stat-active').textContent = '0';
   document.getElementById('dashboard').classList.remove('active');
