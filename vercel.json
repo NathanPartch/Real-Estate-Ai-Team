@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/",       "destination": "/interface/dashboard.html" },
+    { "source": "/listing", "destination": "/interface/index.html" },
+    { "source": "/guide",   "destination": "/interface/publishing-guide.html" }
+  ]
+}

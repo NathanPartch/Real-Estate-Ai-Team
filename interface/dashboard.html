@@ -707,9 +707,9 @@ header{background:var(--ink);color:var(--paper);padding:0 1.75rem;height:56px;di
   </div>
 </div>
 
-<!-- NEW LISTING MODAL -->
-<div class="modal-bg" id="new-listing-modal">
-  <div class="modal" id="new-listing-modal">
+<!-- NEW LISTING INFO MODAL -->
+<div class="modal-bg" id="new-listing-info-modal">
+  <div class="modal">
     <h3>Start a new listing</h3>
     <p style="margin-bottom:.75rem">This is a <strong>100% FSBO service.</strong> You sell your home yourself — we only enter your listing data into the MLS. We do not represent you, negotiate on your behalf, or advise on offers.</p>
     <div style="background:var(--green-light);border:1px solid #b7d9c5;border-radius:10px;padding:.8rem 1rem;margin-bottom:1.1rem;font-size:.835rem;line-height:1.65;color:#2a4a38">
@@ -736,9 +736,125 @@ header{background:var(--ink);color:var(--paper);padding:0 1.75rem;height:56px;di
   </div>
 </div>
 
+<!-- LISTING FORM MODAL -->
+<div class="modal-bg" id="listing-form-modal">
+  <div class="modal" style="max-width:540px;max-height:90vh;overflow-y:auto">
+    <h3>New listing details</h3>
+    <p>Enter your property information. You can update these before submitting to the MLS.</p>
+    <div class="error-msg" id="listing-form-error"></div>
+    <div class="field">
+      <label>Street address</label>
+      <input type="text" id="nl-address" placeholder="456 Elm Street" autocomplete="street-address">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>City</label>
+        <input type="text" id="nl-city" placeholder="Anaheim" autocomplete="address-level2">
+      </div>
+      <div class="field">
+        <label>State</label>
+        <input type="text" id="nl-state" placeholder="CA" maxlength="2" autocomplete="address-level1">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>ZIP code</label>
+        <input type="text" id="nl-zip" placeholder="92801" maxlength="5" autocomplete="postal-code">
+      </div>
+      <div class="field">
+        <label>Asking price ($)</label>
+        <input type="text" id="nl-price" placeholder="875,000">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Bedrooms</label>
+        <input type="number" id="nl-beds" placeholder="4" min="0" max="20">
+      </div>
+      <div class="field">
+        <label>Bathrooms</label>
+        <input type="number" id="nl-baths" placeholder="2.5" min="0" max="20" step="0.5">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Living area (sqft)</label>
+        <input type="number" id="nl-sqft" placeholder="2100" min="0">
+      </div>
+      <div class="field">
+        <label>Lot size (sqft)</label>
+        <input type="number" id="nl-lot" placeholder="6500" min="0">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Year built</label>
+        <input type="number" id="nl-year" placeholder="1988" min="1800" max="2030">
+      </div>
+      <div class="field">
+        <label>Property type</label>
+        <select id="nl-type" style="width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);background:var(--warm);outline:none">
+          <option value="single_family">Single family</option>
+          <option value="condo">Condo / townhome</option>
+          <option value="multi_family">Multi-family</option>
+          <option value="land">Land</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Description (optional)</label>
+      <textarea id="nl-desc" placeholder="Describe your property's best features…" style="width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);background:var(--warm);outline:none;resize:vertical;min-height:80px"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeListingForm()">Cancel</button>
+      <button class="modal-confirm" id="listing-submit-btn" onclick="submitListing()">Save listing draft</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// ── SUPABASE ───────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://ytblzidyqsndpvvsksqz.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_g-OP4VBD5AQhpV4EkzXjCA__zH3H3vp';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 // ── STATE ─────────────────────────────────────────────────────────────
 let currentUser = null;
+
+// ── SESSION RESTORE — handles page-load session and Google OAuth redirect ──
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'SIGNED_IN' && session?.user && !currentUser) {
+    const meta = session.user.user_metadata || {};
+    let profile = await loadProfile(session.user.id);
+    if (!profile) {
+      // First sign-in (e.g. Google OAuth) — create the profile row
+      await sb.from('profiles').upsert({
+        id: session.user.id,
+        first_name: meta.first_name || meta.full_name?.split(' ')[0] || '',
+        last_name:  meta.last_name  || meta.full_name?.split(' ').slice(1).join(' ') || '',
+        email: session.user.email,
+        phone: meta.phone || ''
+      });
+      profile = {
+        id: session.user.id,
+        first: meta.first_name || meta.full_name?.split(' ')[0] || session.user.email.split('@')[0],
+        last:  meta.last_name  || meta.full_name?.split(' ').slice(1).join(' ') || '',
+        email: session.user.email,
+        phone: meta.phone || ''
+      };
+    }
+    currentUser = profile;
+    enterDashboard();
+  }
+});
+
+// ── AUTH HELPERS ──────────────────────────────────────────────────────
+async function loadProfile(userId) {
+  const { data, error } = await sb.from('profiles').select('*').eq('id', userId).single();
+  if (error || !data) return null;
+  return { id: data.id, first: data.first_name || '', last: data.last_name || '', email: data.email, phone: data.phone || '' };
+}
 
 // ── AUTH ──────────────────────────────────────────────────────────────
 function showAuth(tab) {
@@ -753,42 +869,84 @@ function switchAuthTab(tab) {
   document.getElementById('form-signup').classList.toggle('active', tab === 'signup');
 }
 
-function createAccount() {
-  const first = document.getElementById('signup-first').value.trim();
-  const last = document.getElementById('signup-last').value.trim();
-  const email = document.getElementById('signup-email').value.trim();
-  const phone = document.getElementById('signup-phone').value.trim();
-  const pass = document.getElementById('signup-pass').value;
+async function createAccount() {
+  const first   = document.getElementById('signup-first').value.trim();
+  const last    = document.getElementById('signup-last').value.trim();
+  const email   = document.getElementById('signup-email').value.trim();
+  const phone   = document.getElementById('signup-phone').value.trim();
+  const pass    = document.getElementById('signup-pass').value;
   const confirm = document.getElementById('signup-confirm').value;
-  const err = document.getElementById('signup-error');
+  const err     = document.getElementById('signup-error');
 
-  if (!first || !last) { showError(err, 'Please enter your first and last name.'); return; }
+  if (!first || !last)              { showError(err, 'Please enter your first and last name.'); return; }
   if (!email || !email.includes('@')) { showError(err, 'Please enter a valid email address.'); return; }
-  if (pass.length < 8) { showError(err, 'Password must be at least 8 characters.'); return; }
-  if (pass !== confirm) { showError(err, 'Passwords do not match.'); return; }
+  if (pass.length < 8)              { showError(err, 'Password must be at least 8 characters.'); return; }
+  if (pass !== confirm)             { showError(err, 'Passwords do not match.'); return; }
   err.classList.remove('show');
 
-  currentUser = { first, last, email, phone };
+  const btn = document.querySelector('#form-signup .submit-btn');
+  btn.textContent = 'Creating account…';
+  btn.disabled = true;
+
+  const { data, error } = await sb.auth.signUp({
+    email, password: pass,
+    options: { data: { first_name: first, last_name: last, phone } }
+  });
+
+  btn.textContent = 'Create my account';
+  btn.disabled = false;
+
+  if (error) { showError(err, error.message); return; }
+
+  if (!data.session) {
+    // Email confirmation required — Supabase hasn't signed the user in yet
+    toast('Account created! Please check your email to confirm.');
+    return;
+  }
+
+  // Email confirmation is disabled — user is signed in immediately
+  await sb.from('profiles').upsert({ id: data.user.id, first_name: first, last_name: last, email, phone });
+  currentUser = { id: data.user.id, first, last, email, phone };
   enterDashboard();
 }
 
-function googleAuth() {
-  // Placeholder — wire to Supabase Google OAuth when ready
-  currentUser = { first: 'Jane', last: 'Smith', email: 'jane@gmail.com', phone: '' };
-  enterDashboard();
+async function googleAuth() {
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+  if (error) toast('Google sign-in failed: ' + error.message);
 }
 
-function signIn() {
+async function signIn() {
   const email = document.getElementById('login-email').value.trim();
-  const pass = document.getElementById('login-pass').value;
-  const err = document.getElementById('login-error');
+  const pass  = document.getElementById('login-pass').value;
+  const err   = document.getElementById('login-error');
 
   if (!email || !email.includes('@')) { showError(err, 'Please enter your email address.'); return; }
-  if (!pass) { showError(err, 'Please enter your password.'); return; }
+  if (!pass)                          { showError(err, 'Please enter your password.'); return; }
   err.classList.remove('show');
 
-  // Demo: accept any valid-looking credentials
-  currentUser = { first: 'Jane', last: 'Smith', email, phone: '', role: 'seller' };
+  const btn = document.querySelector('#form-login .submit-btn');
+  btn.textContent = 'Signing in…';
+  btn.disabled = true;
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+
+  btn.textContent = 'Sign in';
+  btn.disabled = false;
+
+  if (error) { showError(err, error.message); return; }
+
+  const profile = await loadProfile(data.user.id);
+  const meta = data.user.user_metadata || {};
+  currentUser = profile || {
+    id: data.user.id,
+    first: meta.first_name || email.split('@')[0],
+    last:  meta.last_name  || '',
+    email: data.user.email,
+    phone: meta.phone || ''
+  };
   enterDashboard();
 }
 
@@ -799,24 +957,28 @@ function showError(el, msg) {
 
 function enterDashboard() {
   const { first, last, email } = currentUser;
-  document.getElementById('user-name').textContent = `${first} ${last}`;
+  const displayName = [first, last].filter(Boolean).join(' ') || email;
+  const initials = ((first[0] || '') + (last[0] || '')).toUpperCase() || email[0].toUpperCase();
+
+  document.getElementById('user-name').textContent  = displayName;
   document.getElementById('user-email').textContent = email;
-  document.getElementById('user-avatar').textContent = `${first[0]}${last[0]}`.toUpperCase();
+  document.getElementById('user-avatar').textContent = initials;
   document.getElementById('profile-first').value = first;
-  document.getElementById('profile-last').value = last;
+  document.getElementById('profile-last').value  = last;
   document.getElementById('profile-email').value = email;
   document.getElementById('profile-phone').value = currentUser.phone || '';
 
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('dashboard').classList.add('active');
   document.getElementById('hdr-right').innerHTML = `
-    <span style="font-size:.82rem;color:rgba(247,244,239,.6)">${first} ${last}</span>
+    <span style="font-size:.82rem;color:rgba(247,244,239,.6)">${displayName}</span>
     <button class="hdr-btn" onclick="signOut()">Sign out</button>
   `;
-  toast(`Welcome back, ${first}.`);
+  toast(`Welcome back, ${first || email}.`);
 }
 
-function signOut() {
+async function signOut() {
+  await sb.auth.signOut();
   currentUser = null;
   document.getElementById('dashboard').classList.remove('active');
   document.getElementById('auth-screen').style.display = 'flex';
@@ -833,7 +995,6 @@ function switchPanel(id) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('panel-' + id).classList.add('active');
   event.currentTarget && event.currentTarget.classList.add('active');
-  // manually set active nav since event target may not always be the nav item
   document.querySelectorAll('.nav-item').forEach(n => {
     if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + id + "'")) {
       n.classList.add('active');
@@ -854,13 +1015,21 @@ function confirmSubmit() {
 }
 
 // ── PROFILE ───────────────────────────────────────────────────────────
-function saveProfile() {
-  if (currentUser) {
-    currentUser.first = document.getElementById('profile-first').value.trim();
-    currentUser.last = document.getElementById('profile-last').value.trim();
-    document.getElementById('user-name').textContent = `${currentUser.first} ${currentUser.last}`;
-    document.getElementById('user-avatar').textContent = `${currentUser.first[0]}${currentUser.last[0]}`.toUpperCase();
-  }
+async function saveProfile() {
+  if (!currentUser) return;
+  currentUser.first = document.getElementById('profile-first').value.trim();
+  currentUser.last  = document.getElementById('profile-last').value.trim();
+  currentUser.phone = document.getElementById('profile-phone').value.trim();
+  document.getElementById('user-name').textContent  = [currentUser.first, currentUser.last].filter(Boolean).join(' ');
+  document.getElementById('user-avatar').textContent = (currentUser.first[0] + (currentUser.last[0] || '')).toUpperCase();
+
+  await sb.from('profiles').update({
+    first_name: currentUser.first,
+    last_name:  currentUser.last,
+    phone: currentUser.phone,
+    updated_at: new Date().toISOString()
+  }).eq('id', currentUser.id);
+
   toast('Profile saved.');
 }
 
@@ -874,25 +1043,72 @@ function toast(msg) {
   setTimeout(() => t.remove(), 3500);
 }
 
-// Close modal on bg click
-document.querySelector('#new-listing-modal.modal-bg').addEventListener('click', function(e) {
-  if (e.target === this) closeNewListingModal();
-});
-
-// Enter key on auth forms
-document.getElementById('signup-pass').addEventListener('keydown', e => { if(e.key==='Enter') createAccount(); });
-document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') signIn(); });
-
 // ── NEW LISTING MODAL ─────────────────────────────────────────────────
 function openNewListingModal() {
-  document.querySelector('.modal-bg').classList.add('open');
+  document.getElementById('new-listing-info-modal').classList.add('open');
 }
 function closeNewListingModal() {
-  document.querySelector('.modal-bg').classList.remove('open');
+  document.getElementById('new-listing-info-modal').classList.remove('open');
 }
 function startNewListing() {
   closeNewListingModal();
-  toast("Opening your listing agent — let's get started.");
+  openListingForm();
+}
+function openListingForm() {
+  document.getElementById('listing-form-modal').classList.add('open');
+}
+function closeListingForm() {
+  document.getElementById('listing-form-modal').classList.remove('open');
+}
+
+async function submitListing() {
+  const address = document.getElementById('nl-address').value.trim();
+  const city    = document.getElementById('nl-city').value.trim();
+  const state   = document.getElementById('nl-state').value.trim();
+  const zip     = document.getElementById('nl-zip').value.trim();
+  const price   = parseInt(document.getElementById('nl-price').value.replace(/\D/g, '')) || null;
+  const beds    = parseInt(document.getElementById('nl-beds').value) || null;
+  const baths   = parseFloat(document.getElementById('nl-baths').value) || null;
+  const sqft    = parseInt(document.getElementById('nl-sqft').value) || null;
+  const lot     = parseInt(document.getElementById('nl-lot').value) || null;
+  const year    = parseInt(document.getElementById('nl-year').value) || null;
+  const type    = document.getElementById('nl-type').value;
+  const desc    = document.getElementById('nl-desc').value.trim();
+  const err     = document.getElementById('listing-form-error');
+
+  if (!address || !city || !state || !zip) { showError(err, 'Please fill in the full property address.'); return; }
+  if (!price) { showError(err, 'Please enter a valid asking price.'); return; }
+  err.classList.remove('show');
+
+  const btn = document.getElementById('listing-submit-btn');
+  btn.textContent = 'Saving…';
+  btn.disabled = true;
+
+  const { data, error } = await sb.from('listings').insert({
+    user_id: currentUser.id,
+    address, city, state, zip, price,
+    bedrooms: beds, bathrooms: baths,
+    sqft, lot_size: lot, year_built: year,
+    property_type: type, description: desc,
+    status: 'draft'
+  }).select().single();
+
+  btn.textContent = 'Save listing draft';
+  btn.disabled = false;
+
+  if (error) { showError(err, 'Could not save listing: ' + error.message); return; }
+
+  // Log to activity feed
+  await sb.from('activity').insert({
+    user_id: currentUser.id,
+    listing_id: data.id,
+    type: 'listing_created',
+    message: `New listing draft created: ${address}, ${city} ${state}`,
+    color: 'green'
+  });
+
+  closeListingForm();
+  toast(`Listing draft saved for ${address}.`);
 }
 
 // ── LISTING PROFILE ───────────────────────────────────────────────────
@@ -917,6 +1133,17 @@ function dismissReduction() {
   document.querySelector('.recommend-action').innerHTML = '<span style="font-size:.83rem;color:var(--muted)">Keeping current price of $875,000. Next analysis on April 3.</span>';
   toast('Keeping current price. Next analysis on April 3.');
 }
+
+// ── EVENT LISTENERS ───────────────────────────────────────────────────
+document.getElementById('signup-pass').addEventListener('keydown', e => { if(e.key==='Enter') createAccount(); });
+document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') signIn(); });
+
+document.getElementById('new-listing-info-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeNewListingModal();
+});
+document.getElementById('listing-form-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeListingForm();
+});
 </script>
 </body>
 </html>
