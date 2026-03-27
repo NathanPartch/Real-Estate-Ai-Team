@@ -722,15 +722,14 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentUser = null;
 
 // ── AUTH STATE MACHINE ────────────────────────────────────────────────
-// Single source of truth for all auth transitions.
-// INITIAL_SESSION fires on page load (restores stored session).
-// SIGNED_IN fires after signInWithPassword, signUp, and OAuth redirect.
-// SIGNED_OUT fires after signOut().
-sb.auth.onAuthStateChange(async (event, session) => {
+// Enter the dashboard immediately from session data — no DB calls block sign-in.
+// Profile sync happens in the background after the user is already in.
+sb.auth.onAuthStateChange((event, session) => {
   if ((event === 'INITIAL_SESSION' || event === 'SIGNED_IN') && session?.user) {
-    if (currentUser) return; // already in dashboard, ignore token refreshes
-    currentUser = await buildCurrentUser(session.user);
+    if (currentUser) return;
+    currentUser = userFromSession(session.user);
     enterDashboard();
+    syncProfile(session.user); // background — does not block
   } else if (event === 'SIGNED_OUT') {
     currentUser = null;
     exitDashboard();
@@ -738,24 +737,42 @@ sb.auth.onAuthStateChange(async (event, session) => {
 });
 
 // ── AUTH HELPERS ──────────────────────────────────────────────────────
-async function buildCurrentUser(authUser) {
-  const profile = await loadProfile(authUser.id);
-  if (profile) return profile;
-  // First sign-in — create profile row from auth metadata
-  const meta  = authUser.user_metadata || {};
-  const first = meta.first_name || meta.full_name?.split(' ')[0] || authUser.email.split('@')[0];
-  const last  = meta.last_name  || meta.full_name?.split(' ').slice(1).join(' ') || '';
-  await sb.from('profiles').upsert({
-    id: authUser.id, first_name: first, last_name: last,
-    email: authUser.email, phone: meta.phone || ''
-  });
-  return { id: authUser.id, first, last, email: authUser.email, phone: meta.phone || '' };
+// Build a currentUser object directly from the Supabase auth session — no DB needed.
+function userFromSession(authUser) {
+  const meta = authUser.user_metadata || {};
+  return {
+    id:    authUser.id,
+    first: meta.first_name || meta.full_name?.split(' ')[0] || authUser.email.split('@')[0],
+    last:  meta.last_name  || meta.full_name?.split(' ').slice(1).join(' ') || '',
+    email: authUser.email,
+    phone: meta.phone || ''
+  };
 }
 
-async function loadProfile(userId) {
-  const { data, error } = await sb.from('profiles').select('*').eq('id', userId).single();
-  if (error || !data) return null;
-  return { id: data.id, first: data.first_name || '', last: data.last_name || '', email: data.email, phone: data.phone || '' };
+// Sync / create the profiles row after sign-in — runs in background, never blocks.
+async function syncProfile(authUser) {
+  try {
+    const { data } = await sb.from('profiles').select('id,first_name,last_name,phone').eq('id', authUser.id).single();
+    if (data) {
+      // Update in-memory user with saved profile data
+      if (currentUser && currentUser.id === authUser.id) {
+        currentUser.first = data.first_name || currentUser.first;
+        currentUser.last  = data.last_name  || currentUser.last;
+        currentUser.phone = data.phone      || currentUser.phone;
+      }
+    } else {
+      // First sign-in — create the profile row
+      const meta  = authUser.user_metadata || {};
+      const first = meta.first_name || meta.full_name?.split(' ')[0] || authUser.email.split('@')[0];
+      const last  = meta.last_name  || meta.full_name?.split(' ').slice(1).join(' ') || '';
+      await sb.from('profiles').upsert({
+        id: authUser.id, first_name: first, last_name: last,
+        email: authUser.email, phone: meta.phone || ''
+      });
+    }
+  } catch (_) {
+    // Profile sync is best-effort — auth still works without it
+  }
 }
 
 // ── AUTH ──────────────────────────────────────────────────────────────
