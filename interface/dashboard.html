@@ -348,10 +348,6 @@ header{background:var(--ink);color:var(--paper);padding:0 1.75rem;height:56px;di
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 2v4l2.5 2.5"/><circle cx="8" cy="9" r="6"/></svg>
         Recent activity
       </div>
-      <div class="nav-item" onclick="switchPanel('appointments')">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/></svg>
-        Appointments
-      </div>
 
       <div class="nav-section-label">Account</div>
       <div class="nav-item" onclick="switchPanel('profile')">
@@ -566,66 +562,10 @@ header{background:var(--ink);color:var(--paper);padding:0 1.75rem;height:56px;di
         </div>
         <div class="card-box">
           <h3>Activity log</h3>
-          <div class="activity-list">
-            <div class="activity-item">
-              <div class="activity-dot green"></div>
-              <div class="activity-text">Your listing at 456 Elm St went live on the MLS and Zillow</div>
-              <div class="activity-time">2 days ago</div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-dot blue"></div>
-              <div class="activity-text">Showing request received for 456 Elm St — Saturday 2:00 PM</div>
-              <div class="activity-time">1 day ago</div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-dot gold"></div>
-              <div class="activity-text">Agent inquiry: RE/MAX agent asking about buyer commission rate</div>
-              <div class="activity-time">18 hours ago</div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-dot green"></div>
-              <div class="activity-text">Listing confirmed on Realtor.com and Redfin</div>
-              <div class="activity-time">18 hours ago</div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-dot blue"></div>
-              <div class="activity-text">2 more showing requests received — Sunday 11 AM and 3 PM</div>
-              <div class="activity-time">6 hours ago</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- APPOINTMENTS PANEL -->
-      <div class="dash-panel" id="panel-appointments">
-        <div class="dash-header">
-          <div><h1>Appointments</h1><p>All scheduled showings and inspections</p></div>
-        </div>
-        <div class="listings-grid">
-          <div class="card-box">
-            <h3>Upcoming — 456 Elm Street</h3>
-            <div class="activity-list">
-              <div class="activity-item">
-                <div class="activity-dot green"></div>
-                <div class="activity-text"><strong>Showing</strong> — Saturday, Apr 5 · 2:00 PM<br><span style="font-size:.78rem;color:var(--muted)">Buyer represented by Coldwell Banker agent · 30 min</span></div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-dot green"></div>
-                <div class="activity-text"><strong>Showing</strong> — Sunday, Apr 6 · 11:00 AM<br><span style="font-size:.78rem;color:var(--muted)">Direct buyer — no agent · 45 min</span></div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-dot green"></div>
-                <div class="activity-text"><strong>Showing</strong> — Sunday, Apr 6 · 3:00 PM<br><span style="font-size:.78rem;color:var(--muted)">Buyer represented by Century 21 agent · 30 min</span></div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-dot gold"></div>
-                <div class="activity-text"><strong>Listing Photography</strong> — TBD<br><span style="font-size:.78rem;color:var(--muted)">Pending scheduling</span></div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-dot gold"></div>
-                <div class="activity-text"><strong>Pre-listing Inspection</strong> — TBD<br><span style="font-size:.78rem;color:var(--muted)">Recommended · pending scheduling</span></div>
-              </div>
-            </div>
+          <div class="empty-state" style="padding:2rem 1.5rem">
+            <div class="empty-icon">📋</div>
+            <h3>No activity yet</h3>
+            <p>Events like showings, inquiries, and listing updates will appear here.</p>
           </div>
         </div>
       </div>
